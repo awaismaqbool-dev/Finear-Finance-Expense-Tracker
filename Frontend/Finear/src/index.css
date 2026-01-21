@@ -1,0 +1,16 @@
+@import "tailwindcss";
+@theme {
+  /* Colors */
+  --color-primary: #202c75;
+  --color-secondary: #0c58e8;
+  --color-back-ground: #f0f6fb;
+  --color-light-bule: #8bbbec;
+  /* --color-bule-gradient: linear-gradient(90deg, #004EE8 12.02%, #98C5EC 67.31%); */
+
+  /* Fonts - Yahan "DM Sans" likhein, "DM+Sans" nahi */
+  --font-dmsans: "DM Sans", sans-serif;
+
+  /* Background Image */
+  --background-image-navy-gradient: linear-gradient(270deg, #2439A8 0%, #1D265C 100%);
+  --background-image-bule-gradient: linear-gradient(35deg, #004EE8 12.02%, #98C5EC 67.31%);
+}
