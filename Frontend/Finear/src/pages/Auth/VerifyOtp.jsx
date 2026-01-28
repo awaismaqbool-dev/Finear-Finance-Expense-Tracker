@@ -2,7 +2,7 @@ import React, { useState, useRef } from 'react';
 import AuthLayout from '../../components/layout/AuthLayout'
 
 function VerifyOtp() {
-    const [otp, setOtp] = useState(['', '', '', '']);
+    const [otp, setOtp] = useState(['', '', '', '', '', '']);
   const inputRefs = useRef([]);
 
   // Handle Input Change
@@ -18,7 +18,7 @@ function VerifyOtp() {
     setOtp(newOtp);
 
     // Agle input par focus le jana
-    if (value && index < 3) {
+    if (value && index < 5) {
       inputRefs.current[index + 1].focus();
     }
   };
@@ -32,10 +32,10 @@ function VerifyOtp() {
 
   // Handle Paste Functionality
   const handlePaste = (e) => {
-    const data = e.clipboardData.getData('text').slice(0, 4).split('');
-    if (data.length === 4) {
+    const data = e.clipboardData.getData('text').slice(0, 6).split('');
+    if (data.length === 6) {
       setOtp(data);
-      inputRefs.current[3].focus();
+      inputRefs.current[5].focus();
     }
     e.preventDefault();
   };

@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 
 const userSachema= mongoose.Schema({
 name: { type: String, required: true },
-img: { type: String, required: true },
+email: { type: String, required: true, unique: true },
 password: { type: String, required: true },
 verifyOtp: { type: Number, default:"" },
 restOtp: { type: Number, default: ""},
