@@ -10,7 +10,15 @@ if(!token){
 }
 try {
      const tokenDcode= jwt.verify(token, process.env.JWT_SECRET); 
-     req.userId = tokenDcode.id;
+    if(tokenDcode.id){
+        req.body.userId = tokenDcode.id;
+    }else{
+         return res.status(401).json({
+              success: false,
+      massage: "Not Authrized log in again",
+     });
+    }
+     next();
     } catch (error) {
         return res.status(401).json({
               success: false,

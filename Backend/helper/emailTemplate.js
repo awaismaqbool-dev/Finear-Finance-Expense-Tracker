@@ -29,7 +29,7 @@ const getEmailTemplete = (userName)=>{
 };
 export default getEmailTemplete;
 
- export const getOtpTemplete =(otpCode, userName)=>{
+ export const getOtpTemplete =(userName,otpCode)=>{
   return `
   <div style="max-width: 600px; margin: 0 auto; border: 1px solid #e0e0e0; border-radius: 8px; overflow: hidden; font-family: sans-serif;">
       

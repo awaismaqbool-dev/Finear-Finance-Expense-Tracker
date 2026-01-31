@@ -1,4 +1,4 @@
-import userModel from "../userModels/usermodel.js";
+import userModel from "../userModels/authModel.js";
 import bcryptjs from "bcryptjs";
 import jwt from "jsonwebtoken";
 import getEmailTemplete, { getOtpTemplete } from "../helper/emailTemplate.js";
@@ -95,10 +95,10 @@ try {
     });
     return res.json({ success:true, message:"Login Successfully", 
       userData:{
-        id:exitEmail._id,
-        name:exitEmail.name,
-        email:exitEmail.email,
-        isAccountVerified:exitEmail.isAccountVerified
+        id:existUser._id,
+        name:existUser.name,
+        email:existUser.email,
+        isAccountVerified:existUser.isAccountVerified
       }
     });
 } catch (error) {
@@ -122,8 +122,8 @@ export const logout= async (req,res)=>{
 // send Opt For Verification Api
 export const sendOtp= async (req, res)=>{
 try {
-  const userId= req.userId;
-  const user =  await userModel.findById(userId);
+const {userId} = req.body; 
+    const user = await userModel.findById(userId);
   if(!user){
 return res.json({
       success: false,
@@ -147,55 +147,56 @@ const mailInfo={
   subject: "Otp For Email Varification",
   html:otpTemplate,
 };
-const info= await transporter.sendMail(mailInfo);
-console.log("Message ID:", info.messageId);
-console.log("Preview URL:", nodemailer.getTestMessageUrl(info));
+const info = await transporter.sendMail(mailInfo);
+    console.log("Message ID:", info.messageId);
+    console.log("Preview URL:", nodemailer.getTestMessageUrl(info));
 return res.json({
   success: true,
       message: "OTP sent to your email successfully"
 });
 
 } catch (error) {
-  console.error("OTP Error:", error);
-  res.json({ success: false, message: error.message });
+  console.error(error);
+  return res.status(500).json({ success: false, message: "Internal Server Error" });
 }
 
 };
 
 // verify account api
 export const verifyEmail= async (req,res)=>{
-  const userId = req.userId;
-  const {userOtp} =req.body;
-  if (!userId ||!userOtp) {
+  const {userId, otp } = req.body;
+
+  if (!userId ||!otp) {
     return res.json({ success: false, message: "Missing Deatails" });
   }
 try {
   const user = await userModel.findById(userId);
-  if(user.isAccountVerified){
-          return res.json({
-        success: false,
-        message: "Your Acount is already varified",
-      });
-  }
   if (!user) {
     return res.json({
         success: false,
         message: "user not found please login again",});
   }
-  if(userOtp === ""|| userOtp !== user.verifyOtp || user.verifyOtp === "" ){
+  if(user.isVerified){
+          return res.json({
+        success: false,
+        message: "Your Acount is already varified",
+      });
+  }
+  if(user.verifyOtp != otp || otp === ""|| user.verifyOtp == "" ){
 
         return res.json({
         success: false,
         message: "Wrong Otp, please Enter Correcrt Otp",});
   }
+  
   if (user.otpExpireAt < Date.now()) {
     return res.json({
         success: false,
-        message: "Setion Time out, Please Send Otp Again",});
+        message: "Otp Expried",});
   }
-  user.isAccountVerified=true;
+  user.isVerified=true;
   user.otpExpireAt=0;
-  user.verifyOtp="";
+  user.verifyOtp=0;
   await user.save();
   return res.json({
     success:true,
@@ -206,7 +207,7 @@ try {
 }
 };
 // send Opt For forgetPassword and Resend opt if otp failed or time out Api
-export const reSendOtp= async (req, res)=>{
+export const forgetPassword= async (req, res)=>{
   const {email}= req.body;
   if(!email){
 return res.json({
@@ -222,11 +223,11 @@ return res.json({
       message: "user not found",
     });
   }
-  user.verifyOtp= String(Math.floor(100000 + Math.random() * 900000));
+  user.restOtp= String(Math.floor(100000 + Math.random() * 900000));
   user.otpExpireAt = Date.now() + 30 * 60 * 1000; // valid code for 30 minutes 
   await user.save();
   // nodemailer code
-const otpTemplate=getOtpTemplete(user.name, user.verifyOtp)
+const otpTemplate=getOtpTemplete(user.name, user.restOtp)
 const mailInfo={
   from:process.env.SENDER_EMAIL,
   to:user.email,
@@ -247,7 +248,7 @@ return res.json({
 }
 
 };
-// verify account api
+// verify verifyOtpForget account api
 export const verifyOtpForget= async (req,res)=>{
   const {otp, email } = req.body;
   if (!email ||!otp) {
@@ -260,7 +261,7 @@ try {
         success: false,
         message: "user not found",});
   }
-  if(otp === ""|| otp !== user.verifyOtp || user.verifyOtp === "" ){
+  if(user.restOtp != otp || otp === ""|| user.restOtp == "" ){
 
         return res.json({
         success: false,
@@ -272,7 +273,7 @@ try {
         message: "Setion Time out, Please Send Otp Again",});
   }
   user.otpExpireAt=0;
-  user.verifyOtp="";
+  user.verifyOtp=0;
   await user.save();
   return res.json({
     success:true,
