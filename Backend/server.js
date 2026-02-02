@@ -4,6 +4,7 @@ import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
 import authRouters from "./routes/authRouter.js";
 import connectDB from "./config/mongodb.js";
+import userRouter from "./routes/userRouter.js";
 dotenv.config();
 
 const app = express()
@@ -21,6 +22,7 @@ app.get('/', (req, res) => {
   res.send('Hello From Finear app')
 });
 app.use("/authSystem", authRouters);
+app.use("/dashboard",userRouter );
 app.listen(port, () => {
   console.log(`server start on ${port}`)
 })

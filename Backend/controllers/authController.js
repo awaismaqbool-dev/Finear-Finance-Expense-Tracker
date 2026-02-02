@@ -4,10 +4,9 @@ import jwt from "jsonwebtoken";
 import getEmailTemplete, { getOtpTemplete } from "../helper/emailTemplate.js";
 import nodemailer from 'nodemailer';
 import transporter from '../config/nodemailer.js';
+import profileModel from "../userModels/profileModel.js";
 
-
-
-// signup api
+// signup api 
 export const signup = async (req, res) => {
   const { name, email, password } = req.body;
 
@@ -33,6 +32,11 @@ export const signup = async (req, res) => {
       isVerified: false,
     });
     await user.save();
+    // new profile making
+    const profile = new profileModel({
+        userId: user._id
+      });
+      await profile.save();
     //jwt token code
     const token = jwt.sign({id:user._id}, process.env.JWT_SECRET,{
         expiresIn: "7d"
@@ -59,7 +63,7 @@ return res.json({
   success: true,
       message: "Registered Successfully and Mail Sent",
       mailId: info.messageId,
-      isAccountVerified: user.isAccountVerified,
+      isVerified: user.isVerified,
 });
   } catch (error) {
     res.json({ success: false, message: error.message });
