@@ -11,14 +11,10 @@ const TransactionSchema = mongoose.Schema({
   type: {
     type: String,
     enum: ["income", "expense", "savings"],
-    required:true
+    required: true,
   },
-  source: { type: String, enum: ["cash", "bank"], required:true},
-  category: { type: String, default: "general" },
-  date: {
-    type: Date,
-    default: Date.now,
-  }
-});
+  source: { type: String, enum: ["cash", "bank"], required: true },
+  category: { type: String, default: "general" }
+},{timestamps: true});
 const TransactionModel = mongoose.model("Transaction", TransactionSchema);
 export default TransactionModel;

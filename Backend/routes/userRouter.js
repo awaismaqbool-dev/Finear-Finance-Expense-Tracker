@@ -1,9 +1,10 @@
 import express from "express";
 
-import { userDashboard } from "../controllers/userController.js";
-import { addTransaction, deleteTransaction } from "../controllers/transactionController.js";
+import { userDashboard, userProfile } from "../controllers/userController.js";
+import { addTransaction, deleteTransaction, exportTransactionsToExcel } from "../controllers/transactionController.js";
 import authMiddelWear from "../middelWare/authMiddelWear.js";
-import { addMoneyToGoal, createGoal } from "../controllers/goalController.js";
+import { addMoneyToGoal, createGoal, deleteGoal, updateGoal } from "../controllers/goalController.js";
+import { upload } from "../config/multer.js";
 
 
 
@@ -18,6 +19,12 @@ userRouter.delete("/delete-transaction", authMiddelWear, deleteTransaction);
 userRouter.post("/create-goal", authMiddelWear, createGoal);
 // 5. add money to goal 
 userRouter.post("/goal-transaction", authMiddelWear, addMoneyToGoal);
+//6. profile chnaging 
+userRouter.post('/update-image', authMiddelWear, upload.single('image'), userProfile);
+ // 7. Delete Transaction (By ID)
+userRouter.delete("/delete-goal", authMiddelWear, deleteGoal);
+ // 7. Delete Transaction (By ID)
+userRouter.get("/export-sheet", authMiddelWear, exportTransactionsToExcel);
 
 
  export default userRouter;

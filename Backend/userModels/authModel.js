@@ -8,8 +8,7 @@ verifyOtp: { type: Number, default:0},
 restOtp: { type: Number, default:0},
 otpExpireAt:{type: Number , default: 0},
 isVerified: { type: Boolean , default: false },
-
-
+image: {type: String, default:"uploadImages\profile_img.png"}
 });
 const userModel = mongoose.model('user', authSachema);
 export default userModel;

@@ -5,6 +5,7 @@ import getEmailTemplete, { getOtpTemplete } from "../helper/emailTemplate.js";
 import nodemailer from 'nodemailer';
 import transporter from '../config/nodemailer.js';
 import profileModel from "../userModels/profileModel.js";
+import { modelNames } from "mongoose";
 
 // signup api 
 export const signup = async (req, res) => {
@@ -322,4 +323,22 @@ export const chnagePassword = async (req, res) => {
   } catch (error) {
     res.json({ success: false, message: error.message });
   }
+};
+export const updateName = async (req, res) => {
+   const {name} = req.body; 
+    const userId = req.userId || req.body.id;
+
+    try {
+        const updatedUser = await userModel.findOneAndUpdate(
+            { _id: userId }, 
+            { name}, 
+            { new: true } // Taake updated data wapas milay
+        );
+
+        if (!updatedUser) return res.status(404).json({ success: false, message: "user not found" });
+
+        res.json({ success: true, data: updatedUser });
+    } catch (error) {
+        res.status(500).json({ success: false, message: error.message });
+    }
 };

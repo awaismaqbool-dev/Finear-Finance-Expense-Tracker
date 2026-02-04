@@ -95,52 +95,65 @@ export const addMoneyToGoal = async (req, res) => {
   }
 };
 
-// export const addMoneyToGoal = async (req, res) => {
-//     const userId = req.userId || req.body.id;
-//     // 1. Frontend se goalId lazmi mangwao
-//     const { goalId, amount, source } = req.body;
+// DELETE /api/goals/delete
+export const deleteGoal = async (req, res) => {
+    const { goalId } = req.body;
+    const userId = req.userId || req.body.id;
 
-//     try {
-//         const profile = await profileModel.findOne({ userId });
-//         const balanceField = source === 'Bank' ? user.bankBalance:user.handBalance;
+    try {
+        // 1. Goal finding
+        const goal = await goalsModel.findOne({ _id: goalId, userId });
 
-//         if (profile[balanceField] < amount) {
-//             return res.json({ success: false, message: `Insufficient ${source} balance!` });
-//         }
+        if (!goal) return res.status(404).json({ success: false, message: "goal not fond" });
 
-//         // 2. Ab userId ke bajaye specific goalId se find karo
-//         const goal = await goalsModel.findOne({ _id: goalId, userId: userId });
+        const amountToRefund = goal.savedAmount;
 
-//         if (!goal) {
-//             return res.json({ success: false, message: "Goal not found!" });
-//         }
+        // 2. Agar kuch paisa jama tha to Flexible Savings) mein jay ga 
+        if (amountToRefund > 0) {
+            await profileModel.findOneAndUpdate(
+                { userId },
+                { $inc: { flexibleSavings: amountToRefund } }
+            );
 
-//         // 3. Calculation (Number ka 'N' capital rakho ya parsefloat use karo)
-//         goal.savedAmount += Number(amount);
+            // Ek transaction record taake history bani rahe
+            await TransactionModel.create({
+                userId,
+                title: `Refund: ${goal.goalName} deleted`,
+                amount: amountToRefund,
+                type: "savings", // System isey wapas as an internal income treat karega
+                source: "cash", // Default as flexible asset
+                category: "Goal Refund"
+            });
+        }
 
-//         if (goal.savedAmount >= goal.targetAmount) {
-//             goal.status = "Completed";
-//         }
-//         await goal.save();
+        // 3. Goal delete kar do
+        await goalsModel.findByIdAndDelete(goalId);
 
-//         // 4. Profile Balance Update (Ye step tumhare code mein miss tha)
-//         profile[balanceField] -= Number(amount);
-//         await profile.save();
+        res.status(200).json({ 
+            success: true, 
+            message: `Goal delete ho gaya aur ${amountToRefund} PKR Gullak mein transfer kar diye gaye.` 
+        });
 
-//         // 5. Transaction Record
-//         const newTx = new TransactionModel({
-//             userId,
-//             title: `Saved for ${goal.goalName}`,
-//             amount,
-//             type: "savings",
-//             source,
-//             category: "Goal"
-//         });
-//         await newTx.save();
+    } catch (error) {
+        res.status(500).json({ success: false, message: error.message });
+    }
+}
+//edit Goal Name/Target
+export const updateGoal = async (req, res) => {
+    const { goalId, goalName, targetAmount, priority } = req.body;
+    const userId = req.userId || req.body.id;
 
-//         res.json({ success: true, message: "Money saved for Goal!" });
+    try {
+        const updatedGoal = await goalsModel.findOneAndUpdate(
+            { _id: goalId, userId }, 
+            { goalName, targetAmount, priority }, 
+            { new: true } // Taake updated data wapas milay
+        );
 
-//     } catch (error) {
-//         res.json({ success: false, message: error.message });
-//     }
-// }
+        if (!updatedGoal) return res.status(404).json({ success: false, message: "Goal not fonud" });
+
+        res.json({ success: true, data: updatedGoal });
+    } catch (error) {
+        res.status(500).json({ success: false, message: error.message });
+    }
+};
