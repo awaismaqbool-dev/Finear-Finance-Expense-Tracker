@@ -1,34 +1,33 @@
 import React, { useState } from 'react'
 import InputFiled from './layout/InputFiled'
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from "react-router-dom";
+import { useForm } from "react-hook-form"
+import API from "../../../api";
 
 function NewPassword() {
-  const [password, setPassword]=useState("");
-  const [error, setError]=useState(null);
+  const navigate = useNavigate();
+  const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm();
+const onSubmit=async(formData)=>{
+try {
 
-/// handleLogin funtion 
-const handleLogin = async(e)=>{
-
-  e.preventDefault();
-        setError("")
-const emailRegex = /\S+@\S+\.\S+/;
-  if (!emailRegex.test(email)) {
-    setError("Please enter a valid email format");
-    return;
+  const storedEmail= localStorage.getItem("email");
+  const finalData={
+    ...formData,
+    email:storedEmail
   }
-  if (!password) {
-      setError("please Enter a valid email password");
-      return;
+  //Axios (API) call
+      const response= await API.post("/authSystem/change-Password",finalData);
+      if (response.data.success) {
+        alert("Password Change Successfully");
+      navigate('/auth/login');
+  }else{
+    alert(response.data.message);
+  }
+    } catch (error) {
+      console.error("Full Error:", error.response?.data);
+    alert(error.response?.data?.message || "Something went wrong on the server");
     }
-    if (password.length < 8) {
-    setError("Password must be at least 8 characters");
-    return;
-  }
-  // Agar sab theek hai
-  console.log("Login Success:", { email, password });
-  // Yahan aap apni API call kar sakte hain
-};
-
+}
   return (
     <div className=' w-full
     max-w-2xl
@@ -42,17 +41,20 @@ const emailRegex = /\S+@\S+\.\S+/;
       md:max-w-[50%]
       '>Create and confirm your new password, then sign in again</p>
       </div>
-      <form onSubmit={handleLogin} className=' mx-5 flex flex-col gap-5'>
+      <form onSubmit={handleSubmit(onSubmit)}
+       className=' mx-5 flex flex-col gap-5'>
        <InputFiled
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
           lable="Enter Your Password"
           placeholder="Minimum 8 characters"
           type="password"
+          {...register ("password",{required:"Password is Requried",
+            minLength:{value: 8 , message:"password must be 8+ chrachter"}
+          })}
         />
-        <p className='text-sm text-red-900 capitalize'>{error}</p>
-        <button type="submit" className=' cursor-pointer bg-bule-gradient text-lg text-white p-2 rounded-2xl'>Signup</button>
-        <p>Your password has been successfully updated <Link className=' underline text-blue-900 ' to="/auth/login" >Login</Link></p>
+        {errors.password && <p className="text-red-500 text-sm">{errors.password.message}</p>}
+        <button
+          disabled={isSubmitting}
+          type="submit"className=" cursor-pointer bg-bule-gradient text-lg text-white p-2 rounded-2xl">Change Password</button>
       </form>
     </div>
   )

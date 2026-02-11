@@ -1,47 +1,39 @@
 import React, { useState } from "react";
 import InputFiled from "./layout/InputFiled";
 import { Link, useNavigate } from "react-router-dom";
+import { useForm } from "react-hook-form";
+import API from "../../../api";
+
 function Signup() {
-  const [email, setEmail] = useState("");
-  const [name, setName] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState(null);
-
-  // handleLogin funtion 
-const handleLogin = async(e)=>{
-
-  e.preventDefault();
-        setError("")
-const emailRegex = /\S+@\S+\.\S+/;
-  if (!emailRegex.test(email)) {
-    setError("Please enter a valid email format");
-    return;
-  }
-  if (!password) {
-      setError("please Enter a valid email password");
-      return;
+  const navigate = useNavigate();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+  } = useForm();
+  const onSubmit = async (formData) => {
+    try {
+      //Axios (API) call
+      const response = await API.post("/authSystem/register", formData);
+      const { token, userId } = response.data;
+      if (response.data.success) {
+        localStorage.setItem("token", token);
+        localStorage.setItem("userId", userId);
+        alert(`Signup Successfully, ${formData.name}`);
+        navigate("/dashboard");
+      } else {
+        alert(response.data.message);
+      }
+    } catch (error) {
+      const errorMsg = error.response?.data?.message || "Something went wrong";
+      alert(errorMsg);
+      console.log("Signup failed:", errorMsg);
     }
-    if (password.length < 8) {
-    setError("Password must be at least 8 characters");
-    return;
-  }
-  // Agar sab theek hai
-  console.log("Login Success:", { email, password });
-  // Yahan aap apni API call kar sakte hain
-};
-
+  };
   return (
-    <div
-      className=" w-full
-    max-w-2xl
-    
-    "
-    >
+    <div className=" w-full max-w-2xl">
       <div className="text-center text-primary  my-10">
-        <h1
-          className="text-2xl font-semibold
-        xl:text-4xl"
-        >
+        <h1 className="text-2xl font-semibold xl:text-4xl">
           Sign Up For Free.
         </h1>
         <p
@@ -51,35 +43,54 @@ const emailRegex = /\S+@\S+\.\S+/;
           Get your Finer Dashboard{" "}
         </p>
       </div>
-      <form onSubmit={handleLogin} className=" mx-5 flex flex-col gap-5">
+      <form
+        onSubmit={handleSubmit(onSubmit)}
+        className=" mx-5 flex flex-col gap-5"
+      >
         <InputFiled
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          lable="Name"
+          lable="Full Name"
           placeholder="Enter Full Name"
           type="text"
+          {...register("name", { required: "Name is requied" })}
         />
+        {errors.name && (
+          <p className="text-red-500 text-sm">{errors.name.message}</p>
+        )}
         <InputFiled
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
           lable="Email Address"
           placeholder="example@email.com"
-          type="text"
+          type="email"
+          {...register("email", {
+            required: "Email is Required ",
+            pattern: {
+              value: /\S+@\S+\.\S+/,
+              message: "Invalid email format",
+            },
+          })}
         />
+        {errors.email && (
+          <p className="text-red-500 text-sm">{errors.email.message}</p>
+        )}
         <InputFiled
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
           lable="Enter Your Password"
           placeholder="Minimum 8 characters"
           type="password"
+          {...register("password", {
+            required: "Password is Requried",
+            minLength: { value: 8, message: "password must be 8+ chrachter" },
+          })}
         />
-        <p className="text-sm text-red-900 capitalize">{error}</p>
+        {errors.password && (
+          <p className="text-red-500 text-sm">{errors.password.message}</p>
+        )}
         <button
+          disabled={isSubmitting}
           type="submit"
           className=" cursor-pointer bg-bule-gradient text-lg text-white p-2 rounded-2xl"
         >
           Signup
         </button>
+
         <p>
           Do you have an account?{" "}
           <Link className=" underline text-blue-900 " to="/auth/login">

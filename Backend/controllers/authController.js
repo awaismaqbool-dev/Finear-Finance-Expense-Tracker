@@ -20,7 +20,7 @@ export const signup = async (req, res) => {
   try {
     const exitEmail = await userModel.findOne({ email });
     if (exitEmail) {
-      return res.json({
+      return res.status(400).json({
         success: false,
         message: "User Already Exist",
       });
@@ -124,7 +124,7 @@ export const logout= async (req,res)=>{
     res.json({ success: false, message: error.message });
   }
 };
-// send Opt For Verification Api
+// send Opt For Verification otp Api
 export const sendOtp= async (req, res)=>{
 try {
 const {userId} = req.body; 
@@ -167,7 +167,7 @@ return res.json({
 
 };
 
-// verify account api
+// verify account from otp api
 export const verifyEmail= async (req,res)=>{
   const {userId, otp } = req.body;
 

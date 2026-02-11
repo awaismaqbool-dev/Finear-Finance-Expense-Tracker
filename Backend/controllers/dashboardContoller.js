@@ -16,6 +16,6 @@ export const getDashboardStats = async (req, res) => {
 
     res.status(200).json(stats);
   } catch (error) {
-    res.status(500).json({ message: "Stats nikaalne mein masla hai." });
+    res.status(500).json({ message: "issue in retriving stats" });
   }
 };

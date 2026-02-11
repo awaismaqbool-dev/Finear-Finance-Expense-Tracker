@@ -15,17 +15,15 @@ connectDB();
 app.use(express.json());
 app.use(cookieParser());
 app.use(cors({ 
-  origin: "http://localhost:3000",
+  origin: 'http://localhost:5173',
   credentials: true }));
 
 app.get('/', (req, res) => {
-  res.send('Hello From Finear app')
+  res.json({message:"server connect"});
 });
 app.use("/authSystem", authRouters);
 app.use("/dashboard",userRouter );
 app.listen(port, () => {
   console.log(`server start on ${port}`)
 })
-
-
 

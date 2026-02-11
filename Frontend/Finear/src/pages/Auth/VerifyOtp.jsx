@@ -1,10 +1,53 @@
 import React, { useState, useRef } from 'react';
-import AuthLayout from '../../components/layout/AuthLayout'
+import { Link, useNavigate } from "react-router-dom";
+import API from '../../../api';
 
 function VerifyOtp() {
+  const navigate = useNavigate();
     const [otp, setOtp] = useState(['', '', '', '', '', '']);
   const inputRefs = useRef([]);
-
+// handel send otp to server 
+const handleOtpSubmit = async()=>{
+  const fullOtp= otp.join('');
+  if(fullOtp.length<6){
+  alert("Please Enter Full Otp")
+  return;
+  }
+try {
+  const storedEmail= localStorage.getItem("email");
+    const response = await API.post("/authSystem/verify-otp",{
+    email:storedEmail,
+    otp:fullOtp
+  });  
+  if (response.data.success) {
+alert("OTP Verified Successfully");
+      navigate('/password/new-password');
+  }else{
+    alert(response.data.message);
+  }
+} catch (error) {
+  console.error("Full Error:", error.response?.data);
+    alert(error.response?.data?.message || "Something went wrong on the server");
+}
+}
+// handel Resend otp to server 
+const ResendOtp = async () => {
+    try {
+      //Axios (API) call
+  const storedEmail= localStorage.getItem("email");
+      const response = await API.post("/authSystem/forget-pasword", {email:storedEmail});
+      if (response.data.success) {
+        alert("otp send Successfully");
+        navigate("/password/otp");
+      } else {
+       alert(response.data.message); 
+      }
+    } catch (error) {
+      const errorMsg = error.response?.data?.message || "Something went wrong";
+      alert(errorMsg);
+      console.log("otp sending failed:", errorMsg);
+    }
+  };
   // Handle Input Change
   const handleChange = (element, index) => {
     const value = element.value;
@@ -75,12 +118,12 @@ function VerifyOtp() {
     <div className="space-y-3 sm:space-y-4">
       <button 
         className="w-full py-3 sm:py-4 bg-bule-gradient text-white rounded-full font-normal text-base sm:text-lg shadow-lg hover:opacity-90 transition-opacity active:scale-95"
-        onClick={() => console.log("OTP Submitted:", otp.join(''))}
-      >
+        onClick={handleOtpSubmit}>
         Continue
       </button>
       
-      <button className="w-full py-3 sm:py-4 bg-back-ground text-primary rounded-full font-normal text-base sm:text-lg hover:bg-[#E2E8FF] transition-colors ">
+      <button className="w-full py-3 sm:py-4 bg-back-ground text-primary rounded-full font-normal text-base sm:text-lg hover:bg-[#E2E8FF] transition-colors"
+      onClick={ResendOtp}>
         Send Again
       </button>
     </div>

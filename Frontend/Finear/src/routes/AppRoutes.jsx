@@ -54,22 +54,10 @@ const AppRoutes = () => {
         }
       >
         <Route path="forget-password" element={<ForgetPassword />} />
+        <Route path="otp" element={<VerifyOtp/>} />
         <Route path="new-password" element={<NewPassword />} />
       </Route>
-      {/* Group 3: otp page */}
-      
-      <Route
-        path="/verification"
-        element={
-          <AuthLayout
-            img="../src/assets/auth_img2.png"
-            heading="Don’t worry.We’ve got you."
-            body="© 2026 Finear. All rights reserved your trusted finance partner"
-          />
-        }
-      >
-<Route path="otp" element={<VerifyOtp/>} />
-      </Route>
+
 {/*gorp 4 :Standard Dashboard Routing */}
 <Route path="/dashboard" element={<DashboardLayout />}>
   {/* index ka matlab hai ke jab sirf /dashboard khule toh ye page dikhe */}
@@ -78,7 +66,10 @@ const AppRoutes = () => {
   <Route path="expenses" element={<Expenses />} />
   <Route path="savings" element={<Savings />} />
 </Route>
+
     </Routes>
+
+
   );
 };
 export default AppRoutes;

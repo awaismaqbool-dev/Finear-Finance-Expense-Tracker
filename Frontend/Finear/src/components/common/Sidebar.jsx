@@ -2,7 +2,7 @@ import React from 'react';
 import { LayoutDashboard, ArrowDownLeft, ArrowUpRight, ShieldCheck, LogOut, X } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 
-const Sidebar = ({ isOpen, toggleSidebar }) => {
+const Sidebar = ({ isOpen, toggleSidebar, img, userName }) => {
   const location = useLocation();
 
   const menuItems = [
@@ -34,10 +34,10 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
 
         <div className="px-8 mb-10 text-center mt-12">
           <div className="relative inline-block">
-             <img src="../src/assets/profile_img.png" className="w-24 h-24 rounded-full border-4 border-white shadow-lg mx-auto object-cover" alt="User" />
+             <img src={img} className="w-24 h-24 rounded-full border-4 border-white shadow-lg mx-auto object-cover" alt="User" />
              <div className="absolute bottom-1 right-2 bg-green-500 w-5 h-5 rounded-full border-4 border-white"></div>
           </div>
-          <h3 className="mt-4 font-bold text-primary text-lg">Ava Charlotte</h3>
+          <h3 className="mt-4 font-bold text-primary text-lg">{userName}</h3>
         </div>
 
         <nav className="px-6 space-y-3">

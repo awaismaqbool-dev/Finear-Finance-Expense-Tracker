@@ -2,20 +2,60 @@ import React from "react";
 import { useState } from "react";
 import ProfileDropdown from "./profileDropdown";
 import Sidebar from "../common/Sidebar";
-import { Menu } from "lucide-react";
-import { Outlet } from 'react-router-dom';
+import { Menu, Verified } from "lucide-react";
+import { Navigate, Outlet, useNavigate } from 'react-router-dom';
+import { useEffect } from "react";
+import API from "../../../api";
 
-function DashboardLayout({ children }) {
+function DashboardLayout(){
+  const navigate = useNavigate();
+  // 1. State for user data
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   // Backend placeholder data
-  const userData = {
-    name: "Ava Charlotte",
-    email: "ava.charlotte@example.com",
-    profilePic: "../src/assets/profile_img.png",
-  };
-
+  const [userData, setuserData]=useState({
+   name:"User",
+    email:"",
+    profilePic:"",
+    verified:false,
+  });
+  // 2. Loading state taakay API fetch hote waqt white screen na aaye
+  const [loading, setLoading] = useState(true);
+  useEffect(()=>{
+      const loadDashboard = async()=>{
+      const token = localStorage.getItem("token");
+    if (!token) {
+        setLoading(false);
+        return; 
+      }
+      try {
+        const response = await API.get("/dashboard/loadProfile");
+        if(response.data.success){
+          const fetchedData = response.data.userData;
+         setuserData({
+    name: fetchedData.name,
+    email: fetchedData.email,
+    profilePic: fetchedData.profilePic,
+    verified:fetchedData.verified,
+  }); }else{
+localStorage.removeItem("token");
+navigate("/auth/login")
+  }
+ } catch (error) {
+        console.error("Dashboard Load Error:", error);
+        navigate("/auth/login");
+      }finally {
+        setLoading(false);
+    }
+  }
+  loadDashboard();
+  },[navigate]);
+  // 3. Restriction Logic
+  const token = localStorage.getItem("token");
+  if (!token && !loading) {
+    return <Navigate to="/auth/login" replace />;
+  }
+  if (loading) return <div>Loading Finear...</div>;
   return (
    // Main Wrapper: Sidebar aur Content area side-by-side aayenge
     <div>
@@ -40,7 +80,7 @@ function DashboardLayout({ children }) {
             <img
               src={userData.profilePic}
               className="w-10 h-10 md:w-14 md:h-14 rounded-full border border-white shadow-sm"
-              alt="Ava"
+              alt=""
             />
             <span className="hidden md:block font-medium text-primary text-xl">
               {userData.name}
@@ -52,6 +92,8 @@ function DashboardLayout({ children }) {
       <Sidebar
         isOpen={isSidebarOpen}
         toggleSidebar={() => setIsSidebarOpen(false)}
+        img={userData.profilePic}
+        userName={userData.name}
       />
 
       {/* 2. Main Content Area: Desktop par margin left hoga taakay sidebar ke niche na aaye */}
@@ -59,7 +101,7 @@ function DashboardLayout({ children }) {
         {/* Dynamic Content: Welcome text aur Dashboard page */}
         <main className="p-4 lg:px-10 flex-1 ">
           <h1 className="text-2xl md:text-5xl font-medium text-primary mb-8">
-            Welcome Back, Ava!
+            Welcome Back, {userData.name}
           </h1>
           <Outlet />
         </main>

@@ -3,7 +3,7 @@ import TransactionModel from "../userModels/TransactionModel.js";
 import userModel from "../userModels/authModel.js";
 import goalsModel from "../userModels/GoalsModel.js";
 
-export const userProfile = async (req, res) => {
+export const userProfilePic = async (req, res) => {
   const userId = req.userId || req.body.id;
   try {
     if (!req.file) {
@@ -27,6 +27,25 @@ export const userProfile = async (req, res) => {
     res.status(500).json({ success: false, message: error.message });
   }
 };
+export const loadProfile = async (req, res)=>{
+  const userId = req.userId || req.body.id;
+  try {
+    const user = await userModel.findOne({ userId });
+    if (!user){ return res.json({ success: false, message: "User not found" })};
+    res.json({
+      success: true,
+      userData:{
+        name:user.name,
+        email:user.email,
+        profilePic:user.image,
+        verified:user.isVerified
+      }
+    })
+  } catch (error) {
+    res.json({ success: false, message: error.message });
+  }
+
+}
 export const userDashboard = async (req, res) => {
   try {
     const userId = req.userId || req.body.id;
