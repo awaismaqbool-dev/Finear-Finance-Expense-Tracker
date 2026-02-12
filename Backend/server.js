@@ -13,6 +13,7 @@ const port = process.env.PORT;
 connectDB();
 
 app.use(express.json());
+app.use("/uploadImages", express.static("uploadImages"));
 app.use(cookieParser());
 app.use(cors({ 
   origin: 'http://localhost:5173',

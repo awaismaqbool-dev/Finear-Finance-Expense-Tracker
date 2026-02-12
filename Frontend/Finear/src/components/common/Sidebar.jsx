@@ -1,9 +1,23 @@
 import React from 'react';
 import { LayoutDashboard, ArrowDownLeft, ArrowUpRight, ShieldCheck, LogOut, X } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
+import { useNavigate } from "react-router-dom";
+import API from "../../../api";
 
 const Sidebar = ({ isOpen, toggleSidebar, img, userName }) => {
   const location = useLocation();
+  const navigate = useNavigate();
+  const handleLogout= async()=>{
+  try {
+    const response = await API.post("/authSystem/logout")
+    if(response.data.success){
+      alert(response.data.message);
+navigate("/auth/login");
+    }
+  } catch (error) {
+     alert(error.message);
+  }
+}
 
   const menuItems = [
     { name: 'Dashboard', icon: <LayoutDashboard size={22} />, path: '/dashboard' },
@@ -11,7 +25,6 @@ const Sidebar = ({ isOpen, toggleSidebar, img, userName }) => {
     { name: 'Expenses', icon: <ArrowUpRight size={22} />, path: '/dashboard/expenses' },
     { name: 'Savings', icon: <ShieldCheck size={22} />, path: '/dashboard/savings' },
   ];
-
   return (
     <>
 {/* Mobile Overlay */}
@@ -54,7 +67,7 @@ const Sidebar = ({ isOpen, toggleSidebar, img, userName }) => {
         </nav>
 
         <div className="absolute bottom-10 w-full px-6">
-          <button className="flex items-center gap-4 px-6 py-4 w-full text-gray-400 font-bold hover:text-red-500 transition-colors cursor-pointer">
+          <button className="flex items-center gap-4 px-6 py-4 w-full text-gray-400 font-bold hover:text-red-500 transition-colors cursor-pointer"onClick={handleLogout} >
             <LogOut size={22} />
             <span className="text-sm">Logout</span>
           </button>

@@ -1,35 +1,77 @@
-import React from 'react';
-import { Camera, Edit3, Lock, CheckCircle } from 'lucide-react';
+import React from "react";
+import { Camera, Edit3, Lock, CheckCircle } from "lucide-react";
+import API from "../../../api";
+import { useRef } from "react";
 
-const ProfileDropdown = ({ user, isOpen, onClose }) => {
+const ProfileDropdown = ({ user, isOpen, onClose, img }) => {
+  const fileInputRef = useRef(null);
+  // uploading image funtion
+  const handleImageChange = async (e) => {
+    const file = e.target.files[0];
+    if (!file) {
+      alert("file note selected");
+      return;
+    }
+    const previewUrl = URL.createObjectURL(file);
+    const formData = new FormData();
+    formData.append("image", file);
+    try {
+      const response = await API.post("/dashboard/update-image", formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+      if (response.data.success) {
+        alert("Profile Change Successfully");
+        window.location.reload();
+      }
+    } catch (error) {
+      console.error("Upload error:", error);
+      alert("Failed to upload image.");
+    }
+  };
   if (!isOpen) return null;
 
   return (
     <div className="fixed inset-0 z-50 flex justify-end p-4 md:p-10 pointer-events-none">
       {/* Background Blur Overlay */}
-      <div 
-        className="fixed inset-0 bg-black/10 backdrop-blur-sm pointer-events-auto" 
+      <div
+        className="fixed inset-0 bg-black/10 backdrop-blur-sm pointer-events-auto"
         onClick={onClose}
       ></div>
 
       {/* Dropdown Card */}
       <div className="relative bg-white w-full max-w-[320px] h-fit rounded-[2.5rem] shadow-2xl p-8 flex flex-col items-center pointer-events-auto mt-16 animate-in fade-in zoom-in duration-200">
-        
         {/* Profile Image Section */}
         <div className="relative mb-4">
-          <img 
-            src={user?.profilePic || "../src/assets/profile_img.png"} 
-            alt="Profile" 
-            className="w-32 h-32 rounded-full object-cover border-4 border-white shadow-md"
+          <img
+            src={img}
+            alt="Profile"
+            className="w-32 h-32 rounded-full object-cover border-4 border-white shadow-md "
           />
-          <button className="absolute bottom-1 right-1 bg-secondary p-2 rounded-full text-white shadow-lg border-2 border-white hover:scale-110 transition-transform">
+          {/* Hidden File Input */}
+          <div>
+            <input
+            type="file"
+            ref={fileInputRef}
+            onChange={handleImageChange}
+            className="hidden"
+            accept="image/*"
+          />
+          <button
+            className="absolute bottom-1 right-1 bg-secondary p-2 rounded-full text-white shadow-lg border-2 border-white hover:scale-110 transition-transform"
+            onClick={() => fileInputRef.current.click()}
+          >
             <Camera size={16} />
           </button>
+          </div>
         </div>
 
         {/* User Info */}
-        <h2 className="text-2xl font-bold text-primary mb-1">{user?.name || "Ava Charlotte"}</h2>
-        <p className="text-gray-400 text-sm mb-6">{user?.email || "your@email.com"}</p>
+        <h2 className="text-2xl font-bold text-primary mb-1">
+          {user?.name || "Ava Charlotte"}
+        </h2>
+        <p className="text-gray-400 text-sm mb-6">
+          {user?.email || "your@email.com"}
+        </p>
 
         {/* Action Buttons */}
         <div className="w-full space-y-3 mb-6">
@@ -43,7 +85,8 @@ const ProfileDropdown = ({ user, isOpen, onClose }) => {
 
         {/* Verification Status */}
         <div className="pt-4 border-t border-gray-100 w-full flex justify-center items-center gap-2 text-secondary font-bold text-sm uppercase tracking-tight">
-          Your Are Verified <CheckCircle size={16} className="text-green-500 fill-green-500/20" />
+          Your Are Verified{" "}
+          <CheckCircle size={16} className="text-green-500 fill-green-500/20" />
         </div>
       </div>
     </div>

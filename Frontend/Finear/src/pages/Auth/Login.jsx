@@ -21,9 +21,6 @@ function Login() {
       //Axios (API) call
       const response = await API.post("/authSystem/login", formData);
       if (response.data.success) {
-        const { token, userId } = response.data;
-        localStorage.setItem("token", token);
-        localStorage.setItem("userId", userId);
         alert(`Login Successfully`);
         navigate("/dashboard");
       } else {

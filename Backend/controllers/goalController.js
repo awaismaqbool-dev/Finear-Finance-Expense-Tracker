@@ -3,7 +3,8 @@ import profileModel from "../userModels/profileModel.js";
 import TransactionModel from "../userModels/TransactionModel.js";
 
 export const createGoal = async (req, res) => {
-  const userId = req.userId || req.body.id;
+  
+    const userId = req.userId
   const { goalName, targetAmount, priority } = req.body;
   try {
     const newGoal = new goalsModel({
@@ -14,12 +15,16 @@ export const createGoal = async (req, res) => {
       savedAmount: 0,
     });
     await newGoal.save();
-    res.json({
-      success: true,
-      message: "Goal setup Successfully! now you can add money ",
-    });
+   return res.status(201).json({ 
+            success: true, 
+            message: "Goal Added Successfully" 
+        });
   } catch (error) {
-    res.json({ success: false, message: error.message });
+    console.error("DB SAVE ERROR:", error.message); // Terminal mein error dekhein
+        return res.status(500).json({ 
+            success: false, 
+            message: "Database error: " + error.message 
+        });
   }
 };
 export const addMoneyToGoal = async (req, res) => {
@@ -157,3 +162,18 @@ export const updateGoal = async (req, res) => {
         res.status(500).json({ success: false, message: error.message });
     }
 };
+export const getGoals = async (req, res) => {
+try {
+    const userId = req.userId;
+    const goal = await goalsModel.find({userId}).sort({ createdAt: -1 })
+     if (!goal || goal.length === 0) {
+            return res.status(200).json({ success: true, goals: [], message: "No goals found"});
+        }
+res.json({
+      success: true,
+      goal// Charts ke liye
+    });
+} catch (error) {
+  res.status(500).json({ success: false, message: error.message });
+}
+}

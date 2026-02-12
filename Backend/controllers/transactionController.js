@@ -3,16 +3,24 @@ import profileModel from "../userModels/profileModel.js";
 import TransactionModel from "../userModels/TransactionModel.js";
 import ExcelJS from 'exceljs';
 
-
 export const addTransaction = async (req, res) => {
     
     try {
       const userId = req.userId || req.body.id;
         const {title, amount, type, source, category } = req.body;
+        
+        if (!userId) {
+          return res.status(400).json({ message: "User ID is required. Please login first." });
+        }
+
         //const user = await profileModel.findById({userId:userId});
 const user = await profileModel.findOne({userId:userId});
     if (!user) {
-      return res.status(404).json({ message: "User not Found" });
+      return res.status(404).json({ 
+        message: "User not Found",
+        searchedUserId: userId,
+        tip: "Make sure you're logged in and have created a profile"
+      });
     }
     // 2. Logic Check: Agar Expense hai toh balance check 
     if (type === "expense" || type==="savings") {
@@ -62,6 +70,7 @@ const user = await profileModel.findOne({userId:userId});
         res.status(500).json({ message: "Server Error", error: error.message });
     }
 };
+
 
 export const deleteTransaction= async(req,res)=>{
       const userId = req.userId || req.body.id;
@@ -172,7 +181,7 @@ export const updateTrasnaction = async (req, res) => {
 };
 export const exportTransactionsToExcel = async (req, res) => {
     try {
-        const userId = req.userId || req.body.id;
+        const userId = req.userId
         // Frontend se 'type' ayega (income, expense, ya savings)
         const { type } = req.query; 
 
@@ -211,7 +220,7 @@ export const exportTransactionsToExcel = async (req, res) => {
 
         transactions.forEach(tx => {
             worksheet.addRow({
-                date: tx.createdAt.toLocaleDateString(),
+                date: new Date(tx.createdAt).toLocaleDateString(),
                 title: tx.title,
                 amount: tx.amount,
                 type: tx.type.toUpperCase(),
@@ -232,4 +241,4 @@ export const exportTransactionsToExcel = async (req, res) => {
     } catch (error) {
         res.status(500).json({ success: false, message: error.message });
     }
-};
+};  

@@ -28,16 +28,20 @@ export const userProfilePic = async (req, res) => {
   }
 };
 export const loadProfile = async (req, res)=>{
-  const userId = req.userId || req.body.id;
   try {
-    const user = await userModel.findOne({ userId });
+    // Check karo ke middleware ne ID bheji hai ya nahi
+  const userId = req.userId || req.body.id;
+  if (!userId) {
+    return res.status(401).json({ success: false, message: "No User ID found in token" });
+  }
+    const user = await userModel.findById(userId);
     if (!user){ return res.json({ success: false, message: "User not found" })};
     res.json({
       success: true,
       userData:{
         name:user.name,
         email:user.email,
-        profilePic:user.image,
+        profilePic:`${process.env.BASE_URL}/uploadImages/${user.image}`,
         verified:user.isVerified
       }
     })
@@ -46,6 +50,11 @@ export const loadProfile = async (req, res)=>{
   }
 
 }
+export const updateBudget = async (req, res) => {
+  const { budget } = req.body;
+  await profileModel.findOneAndUpdate({ userId: req.userId }, { monthlyBudget: budget });
+  res.json({ success: true });
+};
 export const userDashboard = async (req, res) => {
   try {
     const userId = req.userId || req.body.id;
@@ -53,6 +62,17 @@ export const userDashboard = async (req, res) => {
     // 1. Profile Data (Balances)
     const user = await profileModel.findOne({ userId });
     if (!user) return res.json({ success: false, message: "User not found" });
+    //2. All Transactions for Calculation (Income/Expense)
+    const allTransactions = await TransactionModel.find({ userId });
+    let totalIncome = 0;
+    let totalExpense = 0;
+    allTransactions.forEach(trans => {
+      if (trans.type === 'income') {
+        totalIncome += trans.amount;
+      } else if (trans.type === 'expense') {
+        totalExpense += trans.amount;
+      }
+    });
 
     // 2. Recent Transactions (Latest 5)
     // .sort({ createdAt: -1 }) se nayi transactions upar aayengi
@@ -63,7 +83,7 @@ export const userDashboard = async (req, res) => {
     // 3. Active Goals (Jo abhi complete nahi huye)
     const activeGoals = await goalsModel
       .find({ userId, status: "Active" })
-      .limit(3);
+      .limit(4);
 
     // Final Response Combined
     res.json({
@@ -73,6 +93,9 @@ export const userDashboard = async (req, res) => {
         bankBalance: user.bankBalance,
         totalBalance: user.handBalance + user.bankBalance,
         savings: user.flexibleSavings,
+        income: totalIncome,
+        expense: totalExpense,
+        monthlyBudget:user.monthlyBudget,
       },
       recentTransactions,
       activeGoals,

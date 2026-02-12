@@ -15,10 +15,7 @@ function Signup() {
     try {
       //Axios (API) call
       const response = await API.post("/authSystem/register", formData);
-      const { token, userId } = response.data;
       if (response.data.success) {
-        localStorage.setItem("token", token);
-        localStorage.setItem("userId", userId);
         alert(`Signup Successfully, ${formData.name}`);
         navigate("/dashboard");
       } else {
