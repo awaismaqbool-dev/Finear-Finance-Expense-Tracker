@@ -11,7 +11,7 @@ import About from "../pages/About/About";
 import ContactUs from "../pages/Contact/ContactUs";
 
 import Signup from "../pages/Auth/Signup";
-import Login from "../pages/Auth/login";
+import Login from "../pages/Auth/Login";
 import ForgetPassword from "../pages/Auth/ForgetPassword";
 import NewPassword from "../pages/Auth/NewPassword";
 import VerifyOtp from "../pages/Auth/VerifyOtp";

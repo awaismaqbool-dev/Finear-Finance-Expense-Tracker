@@ -1,4 +1,4 @@
-import goalsModel from "../userModels/GoalsModel.js";
+import goalsModel from "../userModels/goalsModel.js";
 import profileModel from "../userModels/profileModel.js";
 import TransactionModel from "../userModels/TransactionModel.js";
 
