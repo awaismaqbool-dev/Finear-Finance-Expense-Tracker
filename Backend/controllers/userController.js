@@ -1,7 +1,8 @@
 import profileModel from "../userModels/profileModel.js";
 import TransactionModel from "../userModels/TransactionModel.js";
 import userModel from "../userModels/authModel.js";
-import goalsModel from "../userModels/GoalsModel.js";
+import goalsModel from "../userModels/goalsModel.js";
+
 
 export const userProfilePic = async (req, res) => {
   const userId = req.userId || req.body.id;
