@@ -1,6 +1,6 @@
 import React from "react";
 import Content from "../../components/common/Content";
-import Steps from "./components/steps";
+import Steps from "./components/Steps";
 
 function HowItWorks() {
   return (
