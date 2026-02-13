@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const API = axios.create({
-  baseURL: 'http://localhost:8080', // Tumhara backend URL
+  baseURL: 'finear-finance-expense-tracker-production.up.railway.app', // Tumhara backend URL http://localhost:8080
   withCredentials: true, 
 });
 API.interceptors.request.use((config)=>{
