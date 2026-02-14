@@ -18,7 +18,7 @@ const gotoHome=()=>{
       <div className='flex justify-between items-center py-4 px-2 md:px-0'>
         
         {/* 1. Logo */}
-        <img src="./src/assets/logo.svg" alt="Finear Logo" className="w-32 md:w-40" onClick={gotoHome} />
+        <img src="/logo.svg" alt="Finear Logo" className="w-32 md:w-40" onClick={gotoHome} />
 
         {/* 2. Desktop Navigation (lg screens se upar dikhegi) */}
         <div className='hidden lg:flex rounded-full w-fit px-8 py-2 justify-center items-center shadow-[0px_0px_20px_5px_rgba(108,138,255,0.1)] border border-gray-100 '>

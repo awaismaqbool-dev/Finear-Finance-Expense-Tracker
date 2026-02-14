@@ -7,7 +7,7 @@ import connectDB from "./config/mongodb.js";
 import userRouter from "./routes/userRouter.js";
 dotenv.config();
 const allowedOrigins = [
-  'https://finear-finance-expense-tracker-qcg4.vercel.app',
+  'http://localhost:5173',
   'https://finear-finance-expense-tracker.vercel.app' // Jo error mein origin aa raha hai usay bhi add karein
 ];
 const app = express()
@@ -20,12 +20,12 @@ app.use("/uploadImages", express.static("uploadImages"));
 app.use(cookieParser());
 app.use(cors({
   origin: function (origin, callback) {
-    // Allow requests with no origin (like mobile apps or curl)
-    if (!origin) return callback(null, true);
-    if (allowedOrigins.indexOf(origin) === -1) {
-      return callback(new Error('CORS Policy block: This origin is not allowed'), false);
+    // Agar request local ho (bina origin ke, like Postman) ya allowed list mein ho
+    if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      callback(new Error('CORS blocked this request!'));
     }
-    return callback(null, true);
   },
   credentials: true,
   methods: ["GET", "POST", "PUT", "DELETE"],

@@ -15,7 +15,7 @@ function About() {
       >
         <img
           className="absolute pointer-events-none"
-          src="../src/assets/background_img.png"
+          src="/background_img.png"
           alt=""
         />
         <div className="absolute z-10 capitalize">
@@ -32,7 +32,7 @@ function About() {
       </div>
       <div className="w-full bg-white">
         <AboutSec
-          src="../src/assets/behind_story_img.png"
+          src="/behind_story_img.png"
           heading1="The "
           middelTaxt="Story"
           headin2=" Behind Finear."
@@ -42,7 +42,7 @@ function About() {
         />
         <div className="bg-back-ground">
                    <AboutSec
-          src="../src/assets/prurpo_img.png"
+          src="/prurpo_img.png"
           heading1="Driven by Purpose, "
           middelTaxt="Guided"
           headin2="  by Vision."

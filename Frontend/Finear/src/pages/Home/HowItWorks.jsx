@@ -10,7 +10,7 @@ function HowItWorks() {
           className=" 
       hidden absolute opacity-10 translate-y-20 max-w-full
       sm:block"
-          src="../src/assets/flow.png"
+          src="/flow.png"
           alt="img"
         />
         <div className="content ">

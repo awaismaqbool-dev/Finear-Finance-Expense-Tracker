@@ -35,8 +35,8 @@ function Footer() {
         </div>
         <img
           className=" absolute inset-0 w-full h-full object-cover pointer-events-none hidden lg:block opacity-50"
-          src="../src/assets/footer_lines.png"
-          alt=""
+          src="/footer_lines.png"
+          alt="img"
         />
       </div>
 
@@ -46,7 +46,7 @@ function Footer() {
       xl:h-16 xl:pl-18 xl:pr-18
       2xl:h-15 2xl:justify-around 2xl:pl-30 2xl:pr-30"
       >
-        <img className="p-3" src="../src/assets/logoWhite.svg" alt="logo" />
+        <img className="p-3" src="/logoWhite.svg" alt="logo" />
         <p
           className=" text-white text-right flex justify-center items-center text-[0.6rem] pr-3 
                 md:text-[0.8rem]"

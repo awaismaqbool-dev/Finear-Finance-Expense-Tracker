@@ -42,19 +42,20 @@ const user = await profileModel.findOne({userId:userId});
     })
     await newTransaction.save();
     // 4. User Balance Update Karo (Atomic Logic)
+    const numAmount = Number(amount);
     if (type === "income") {
-      if (source === "cash") user.handBalance += amount;
-      else user.bankBalance += amount;
+      if (source === "cash") user.handBalance += numAmount;
+      else user.bankBalance += numAmount;
     } 
     else if (type === "expense") {
-      if (source === "cash") user.handBalance -= amount;
-      else user.bankBalance -= amount;
+      if (source === "cash") user.handBalance -= numAmount;
+      else user.bankBalance -= numAmount;
     }
     else if (type === "savings") {
       // Savings logic: Bank/Cash se nikal kar Savings mein jaay
-      if (source === "cash") user.handBalance -= amount;
-      else user.bankBalance -= amount;
-      user.flexibleSavings = (user.flexibleSavings || 0) + amount;
+      if (source === "cash") user.handBalance -= numAmount;
+      else user.bankBalance -= numAmount;
+      user.flexibleSavings = (Number(user.flexibleSavings) || 0) + numAmount;
     }
     await user.save();
     res.status(201).json({

@@ -27,19 +27,26 @@ const Savings = () => {
       );
       const resGoal = await API.get ("/dashboard/get-goals")
       if (response.data.success) {
-        // Backend se aane wala graphData format karke chart mein dalna
-        // Agar backend se date-wise data chahiye toh hum wahan mapping karenge
-        const formattedChart = response.data.transactions
-          .slice(0, 7)
-          .map((t, index) => ({
-            // Date ke saath number (index) laga diya taake har point unique ho
-            // 'reverse()' ki wajah se hum 'length - index' use kar rahe hain
-            date: `${new Date(t.createdAt).toLocaleDateString("en-GB", { day: "numeric", month: "short" })} (#${response.data.transactions.length - index})`,
-            amount: Number(t.amount),
-          }))
-          .reverse();
-        setChartData(formattedChart);
-      }
+  // 1. Pehle transactions ko safe kiya  (agar undefined ho toh empty array mil jaye ga)
+  const transactions = response.data?.transactions || [];
+
+  // 2. transactions hain bhi ya nahi
+  if (transactions.length > 0) {
+    const formattedChart = transactions
+      .slice(0, 7)
+      .map((t, index) => ({
+        // Yahan bhi transactions variable use karein
+        date: `${new Date(t.createdAt).toLocaleDateString("en-GB", { day: "numeric", month: "short" })} (#${transactions.length - index})`,
+        amount: Number(t.amount),
+      }))
+      .reverse();
+
+    setChartData(formattedChart);
+  } else {
+    // Agar data khali hai toh chart ko empty array dein
+    setChartData([]);
+  }
+}
       if (resGoal.data.success) {
       setGoals(resGoal.data.goal);
     }
@@ -118,7 +125,7 @@ const Savings = () => {
 
         {/* Goals List */}
         <div className="space-y-16">
-          {goals.map((goal) => {
+          {goals?.map((goal) => {
             // Dynamic Percentage Calculation
             const percentage = Math.min(
               (goal.savedAmount / goal.targetAmount) * 100,

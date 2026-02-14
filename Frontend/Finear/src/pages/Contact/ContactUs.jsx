@@ -18,7 +18,7 @@ function ContactUs() {
       >
         <img
           className="absolute pointer-events-none"
-          src="../src/assets/background_img.png"
+          src="/background_img.png"
           alt=""
         />
         <div className="absolute z-10 capitalize">

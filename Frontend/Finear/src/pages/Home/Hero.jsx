@@ -19,7 +19,7 @@ function Hero() {
         >
           <img
             className="absolute pointer-events-none"
-            src="../src/assets/background_img.png"
+            src="/background_img.png"
             alt=""
           />
           <div className="absolute z-10">
@@ -50,7 +50,7 @@ function Hero() {
           >
             <img
               className=" object-contain w-full h-full rounded-xl m-auto"
-              src="../src/assets/Dashbaord.png"
+              src="/dashbaord.png"
               alt="dashbaord img"
             />
           </div>

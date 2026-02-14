@@ -26,12 +26,12 @@ function Features() {
          "
         >
           <FeatureCard
-            img="../src/assets/grph.svg"
+            img="/grph.svg"
             heading="Real-Time Financial Dashboards"
             body="See your income, expenses, and balance update instantly, so you always know your financial position."
           />
           <FeatureCard
-            img="../src/assets/map.svg"
+            img="/map.svg"
             heading="Smart Spending Insights"
             body="Understand where your money goes with clear insights that help you control spending and save more."
           />

@@ -62,7 +62,7 @@ function DashboardLayout() {
             <Menu size={24} />
           </button>
           <img
-            src="../src/assets/logo.svg"
+            src="/logo.svg"
             alt="Finear"
             className="w-30 md:w-37"
             onClick={()=>{navigate("/")}}
@@ -115,7 +115,7 @@ function DashboardLayout() {
       <div className="footerBar w-full h-15 bg-navy-gradient flex justify-between px-6">
         <img
           className="p-5 lg:p-3"
-          src="../src/assets/logoWhite.svg"
+          src="/logoWhite.svg"
           alt="logo"
         />
         <p

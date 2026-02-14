@@ -34,7 +34,7 @@ const AppRoutes = () => {
         path="/auth"
         element={
           <AuthLayout
-            img="../src/assets/auth_img.png"
+            img="/auth_img.png"
             heading="Feel confident about your finances."
             body="© 2026 Finear. All rights reserved your trusted finance partner"
           />
@@ -47,7 +47,7 @@ const AppRoutes = () => {
         path="/password"
         element={
           <AuthLayout
-            img="../src/assets/auth_img2.png"
+            img="/auth_img2.png"
             heading="Don’t worry.We’ve got you."
             body="© 2026 Finear. All rights reserved your trusted finance partner"
           />
