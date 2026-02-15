@@ -98,7 +98,7 @@ function DashboardLayout() {
           {/* Dynamic Content: Welcome text aur Dashboard page */}
           <main className="p-4 lg:px-10 flex-1 ">
             <h1 className="text-2xl md:text-5xl font-medium text-primary mb-8">
-              Welcome Back, {userData.name}
+              Welcome Back, {userData.name.charAt(0).toUpperCase()+userData.name.slice(1)}
             </h1>
             <Outlet context={{ userData }} />
           </main>

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Plus, Download } from "lucide-react";
+import { Plus, Download, Pencil, Trash } from "lucide-react";
 import {
   AreaChart,
   Area,
@@ -12,12 +12,15 @@ import {
 import TransactionPopup from "../../components/popups/TransactionPopup";
 import API from "../../../api";
 import { useEffect } from "react";
+import DeletePopup from "../../components/popups/DeletePopup";
 
 const Expenses = () => {
   const [isPopUpOpen, setIsPopUpOpen] = useState(false);
+  const [isDelPopUpOpen, setisDelPopUpOpen] = useState(false);
   const [transactions, setTransactions] = useState([]);
   const [chartData, setChartData] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [selectedTransaction, setSelectedTransaction] = useState(null);
   const fetchExpensesData = async () => {
     try {
       setLoading(true);
@@ -74,6 +77,21 @@ const Expenses = () => {
     } finally {
       setLoading(false);
     }
+  };
+  //open popup for editing funtion call
+  const openEditPopup = (transactions) => {
+    setSelectedTransaction(transactions); // Data set kiya
+    setIsPopUpOpen(true); // Popup khola
+  };
+  //open popup for add tarnsaction funtion call
+  const openAddPopup = () => {
+    setSelectedTransaction(null); // Data clear (taake empty form khule)
+    setIsPopUpOpen(true);
+  };
+  // funtion for set popup for delete button
+const openDeletPopup = (transactions) => {
+    setSelectedTransaction(transactions); // Data set kiya
+    setisDelPopUpOpen(true); // Popup khola
   };
   useEffect(() => {
     fetchExpensesData();
@@ -191,9 +209,22 @@ const Expenses = () => {
                     </p>
                   </div>
                 </div>
+                  <div className="flex items-center gap-6">
+                    <div
+                    onClick={() => openEditPopup(item)}
+                    className="cursor-pointer hover:text-secondary transition-colors p-1 flex flex-rox gap-5"
+                  >
+                    <Pencil size={13} />
+                  </div>
+                  <div onClick={() => openDeletPopup(item)}
+                  className="cursor-pointer hover:text-secondary transition-colors p-1 flex flex-rox gap-5">
+        
+                    <Trash size={13} />
+                  </div>
                 <div className="bg-back-ground px-4 py-2 rounded-2xl text-xs font-bold text-primary">
                   -{item.amount.toLocaleString()} PKR
                 </div>
+                    </div>                
               </div>
             ))
           ) : (
@@ -207,9 +238,16 @@ const Expenses = () => {
       <TransactionPopup
         isOpen={isPopUpOpen}
         onClose={() => setIsPopUpOpen(false)}
+        initialData={selectedTransaction}
         type="expense"
         name="Expense"
         onSuccess={fetchExpensesData}
+      />
+      <DeletePopup
+      isOpen={isDelPopUpOpen}
+      onClose={() => setisDelPopUpOpen(false)}
+      transaction={selectedTransaction}
+      onSuccess={fetchExpensesData}
       />
     </div>
   );

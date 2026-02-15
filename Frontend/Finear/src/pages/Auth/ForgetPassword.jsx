@@ -70,12 +70,12 @@ function ForgetPassword() {
           type="submit"
           className=" cursor-pointer bg-bule-gradient text-lg text-white p-2 rounded-2xl"
         >
-          Signup
+          Get OTP
         </button>
         <p>
           Don't have an account?{" "}
           <Link className=" underline text-blue-900 " to="/auth/signup">
-            Signup
+            Sign up
           </Link>
         </p>
       </form>

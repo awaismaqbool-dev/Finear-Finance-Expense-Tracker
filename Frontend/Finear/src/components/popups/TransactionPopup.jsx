@@ -1,10 +1,11 @@
 import React from 'react';
 import { useState } from 'react';
-import { X, PlusCircle } from 'lucide-react';
+import { useEffect } from "react";
+import { X, PlusCircle, Save } from 'lucide-react';
 import API from "../../../api";
 
 
-const TransactionPopup = ({ isOpen, onClose,type, name, onSuccess }) => {
+const TransactionPopup = ({ isOpen, onClose,type, name, onSuccess,initialData = null }) => {
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     title: "",
@@ -12,7 +13,25 @@ const TransactionPopup = ({ isOpen, onClose,type, name, onSuccess }) => {
     source: "Bank", // Default
     category: "",
   });
+  // Jab bhi initialData badle (ya popup khule), form fill karo
+  useEffect(() => {
+  if (initialData && isOpen) {
+    setFormData({
+      title: initialData.title || "",
+      amount: initialData.amount || "",
+      // Source ko capital case mein convert karna taake radio button match ho jaye
+      source: initialData.source 
+        ? initialData.source.charAt(0).toUpperCase() + initialData.source.slice(1) 
+        : "Bank",
+      category: initialData.category || "",
+    });
+  } else if (isOpen) {
+    // Sirf tab reset karein jab popup naye sirey se khule (Add mode)
+    setFormData({ title: "", amount: "", source: "Bank", category: "" });
+  }
+}, [initialData, isOpen]);
   if (!isOpen) return null;
+
   const handleSubmit = async(e) => {
   e.preventDefault();
   setLoading(true);
@@ -23,9 +42,19 @@ const TransactionPopup = ({ isOpen, onClose,type, name, onSuccess }) => {
       source: formData.source.toLowerCase()  // Convert to lowercase 
     }
     console.log("Sending to API:", payLoad);
-    const response = await API.post("/dashboard/add-transaction", payLoad);
-    if(response.data.success || response.status === 201) {
-      alert(`${type} add successfully!`)
+    let response; 
+    if (initialData) {
+              // --- EDIT MODE ---
+   response=  await API.put("/dashboard/update-transaction", { 
+      ...payLoad, 
+      transactionId: initialData._id  // ID bheji hai
+    });
+    } else {
+      // --- ADD MODE ---
+     response=  await API.post("/dashboard/add-transaction", payLoad);
+    }
+    if(response.data.success || response.status === 201 || response.status === 200) {
+      alert(initialData ? "Updated Successfully!" : `${type} added successfully!`)
       setFormData({ title: "", amount: "", source: "Bank", category: "" });
       onSuccess();
       onClose();
@@ -121,7 +150,8 @@ const TransactionPopup = ({ isOpen, onClose,type, name, onSuccess }) => {
             <button className="flex items-center gap-2 bg-bule-gradient to-light-bule text-white px-6 py-3 rounded-xl font-bold shadow-lg hover:scale-105 transition-all"
             disabled={loading}
             type="submit">
-              <PlusCircle size={20} /> Add {name}
+              {initialData ? <Save size={20} /> : <PlusCircle size={20} />}
+              {initialData ? `Update ${name}` : `Add ${name}`}
             </button>
           </div>
         </form>

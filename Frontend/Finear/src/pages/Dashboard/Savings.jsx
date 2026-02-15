@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Plus } from "lucide-react";
+import { BanknoteArrowDown, Plus,Pencil, Trash } from "lucide-react";
 import {
   BarChart,
   Bar,
@@ -72,12 +72,20 @@ const Savings = () => {
               Track your earnings over time and analyze your income trends.
             </p>
           </div>
+          <div className="flex flex-col gap-5 md:flex-row">
+                      <button
+            className="flex items-center gap-2 bg-secondary text-white px-4 py-2 rounded-xl text-sm font-bold shadow-lg shadow-blue-200 "
+          >
+            <BanknoteArrowDown size={18} /> withdraw  Money
+          </button>
           <button
             onClick={() => setIsPopUpOpen(true)}
             className="flex items-center gap-2 bg-secondary text-white px-4 py-2 rounded-xl text-sm font-bold shadow-lg shadow-blue-200"
           >
             <Plus size={18} /> Add Savings
           </button>
+          </div>
+
         </div>
 
         <div className="h-75 w-full">
@@ -117,14 +125,14 @@ const Savings = () => {
       <div className="bg-white p-8 rounded-3xl">
         <div className="flex justify-between items-center mb-10">
           <h2 className="text-2xl font-medium text-gray-400">Active Goals</h2>
-          <button className="bg-secondary text-white px-6 py-2 rounded-xl font-bold shadow-lg hover:scale-105 transition-all"
+           <button className="bg-secondary text-white px-6 py-2 rounded-xl font-bold shadow-lg hover:scale-105 transition-all"
           onClick={()=>{setIsGoalPopUpOpen(true)}}>
             + Add Goal
           </button>
         </div>
 
         {/* Goals List */}
-        <div className="space-y-16">
+        <div className="space-y-16 ">
           {goals?.map((goal) => {
             // Dynamic Percentage Calculation
             const percentage = Math.min(
@@ -137,7 +145,7 @@ const Savings = () => {
                 <div className="flex justify-between items-end mb-4">
                   <div>
                     <h3 className="text-2xl font-bold text-primary mb-1">
-                      {goal.goalName}
+                      {goal.goalName.charAt(0).toUpperCase()+goal.goalName.slice(1)}
                     </h3>
                     <p className="text-gray-400 font-medium">
                       Priority:{" "}
@@ -145,6 +153,22 @@ const Savings = () => {
                     </p>
                   </div>
                   <div className="text-right">
+                    <div className="flex flex-row justify-between mb-1 rounded-lg bg-gray-100 px-2 items-center">
+                                        <div
+                                    
+                                          className="cursor-pointer hover:text-secondary transition-colors p-1"
+                                        >
+                                          <Pencil size={18} />
+                                        </div>
+                                        <div
+                                        className="cursor-pointer hover:text-secondary transition-colors p-1">
+                                          <Trash size={18} />
+                                        </div>
+                                        <div className="cursor-pointer hover:text-secondary transition-colors p-1 font-semibold">
+                                          + Add Money
+                                        </div>
+                    </div>
+
                     <p className="text-gray-400 font-medium">
                       Target Amount{" "}
                       <span className="text-primary text-2xl ml-2">

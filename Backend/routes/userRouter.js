@@ -1,7 +1,7 @@
 import express from "express";
 
 import { loadProfile, updateBudget, userDashboard, userProfilePic } from "../controllers/userController.js";
-import { addTransaction, deleteTransaction, exportTransactionsToExcel } from "../controllers/transactionController.js";
+import { addTransaction, deleteTransaction, exportTransactionsToExcel, updateTrasnaction } from "../controllers/transactionController.js";
 import authMiddelWear from "../middelWare/authMiddelWear.js";
 import { addMoneyToGoal, createGoal, deleteGoal, getGoals, updateGoal } from "../controllers/goalController.js";
 import { upload } from "../config/multer.js";
@@ -34,6 +34,8 @@ userRouter.post('/updateBudget', authMiddelWear, updateBudget);
 userRouter.get('/get-transactions', authMiddelWear, getTransactions)
 //10 get goal for display goal on ssaving page 
 userRouter.get('/get-goals', authMiddelWear, getGoals)
+
+userRouter.put('/update-transaction',authMiddelWear,updateTrasnaction )
 
 
 

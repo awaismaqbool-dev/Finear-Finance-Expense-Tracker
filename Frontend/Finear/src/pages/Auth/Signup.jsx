@@ -85,7 +85,7 @@ function Signup() {
           type="submit"
           className=" cursor-pointer bg-bule-gradient text-lg text-white p-2 rounded-2xl"
         >
-          Signup
+          Sign up
         </button>
 
         <p>
