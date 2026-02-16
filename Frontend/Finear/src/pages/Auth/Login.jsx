@@ -5,6 +5,7 @@ import { useForm } from "react-hook-form";
 import API from "../../../api";
 
 function Login() {
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const {
     register,
@@ -19,6 +20,7 @@ function Login() {
   const onSubmit = async (formData) => {
     try {
       //Axios (API) call
+      setLoading(true)
       const response = await API.post("/authSystem/login", formData);
       if (response.data.success) {
         alert(`Login Successfully`);
@@ -30,8 +32,18 @@ function Login() {
       const errorMsg = error.response?.data?.message || "Something went wrong";
       alert(errorMsg);
       console.log("login failed:", errorMsg);
-    }
+    }finally {
+        setLoading(false);
+      }
   };
+  if (loading) {
+    return (
+      <div className="h-screen w-full flex items-center justify-center bg-back-ground">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-primary"></div>
+        <span className="ml-3 text-primary font-medium">Loading Finear...</span>
+      </div>
+    );
+  }
 
   return (
     <div

@@ -5,6 +5,7 @@ import { useForm } from "react-hook-form";
 import API from "../../../api";
 
 function Signup() {
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const {
     register,
@@ -14,8 +15,9 @@ function Signup() {
   const onSubmit = async (formData) => {
     try {
       //Axios (API) call
+      setLoading(true)
       const response = await API.post("/authSystem/register", formData);
-      if (response.data.success) {
+      if (response.data.success || response.status === 201 || response.status === 200) {
         alert(`Signup Successfully, ${formData.name}`);
         navigate("/dashboard");
       } else {
@@ -25,8 +27,18 @@ function Signup() {
       const errorMsg = error.response?.data?.message || "Something went wrong";
       alert(errorMsg);
       console.log("Signup failed:", errorMsg);
-    }
+    }finally {
+        setLoading(false);
+      }
   };
+    if (loading) {
+    return (
+      <div className="h-screen w-full flex items-center justify-center bg-back-ground">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-primary"></div>
+        <span className="ml-3 text-primary font-medium">Loading Finear...</span>
+      </div>
+    );
+  }
   return (
     <div className=" w-full max-w-2xl">
       <div className="text-center text-primary  my-10">
