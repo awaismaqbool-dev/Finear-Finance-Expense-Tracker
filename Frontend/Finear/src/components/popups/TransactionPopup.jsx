@@ -13,6 +13,7 @@ const TransactionPopup = ({ isOpen, onClose,type, name, onSuccess,initialData = 
     source: "Bank", // Default
     category: "",
   });
+  
   // Jab bhi initialData badle (ya popup khule), form fill karo
   useEffect(() => {
   if (initialData && isOpen) {

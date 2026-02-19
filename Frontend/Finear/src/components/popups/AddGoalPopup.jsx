@@ -1,32 +1,51 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { X, Target } from 'lucide-react';
 import API from "../../../api";
 
 // 1. onSuccess prop yahan lazmi add karein
-const AddGoalPopUp = ({ isOpen, onClose, onSuccess }) => {
+const AddGoalPopUp = ({ isOpen, onClose, onSuccess,initialData = null }) => {
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     goalName: "",
     targetAmount: "",
     priority: "medium", 
   });
+  useEffect(()=>{
+    if (initialData && isOpen) {
+      setFormData({
+        goalName: initialData.goalName||"",
+    targetAmount: initialData.targetAmount||"",
+    priority: initialData.priority,
+      })
+    }else if(isOpen){
+      setFormData({ goalNamee: "", targetAmount: "", priority: "medium"});
+    }
+  },[initialData, isOpen])
   if (!isOpen) return null;
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     try {
-      // Data types ensure karein
       const payLoad = {
         goalName: formData.goalName, // Agar backend 'title' mang raha hai
         targetAmount: Number(formData.targetAmount),
         priority: formData.priority.toLowerCase()  // Convert to lowercase 
       };
       console.log("Sending Goal to API:", payLoad);
-      const response = await API.post("/dashboard/create-goal", payLoad);
-      if (response.data.success || response.status === 201) {
-        alert("Goal added successfully!");
+      let response; 
+      if (initialData) {
+        response = await API.put("/dashboard/update-goal", {
+          ...payLoad,
+          goalId: initialData._id // ID bheji hai
+        });
+      }else {
+        response = await API.post("/dashboard/create-goal", payLoad);
+      }
+      if (response.data.success || response.status === 201 || response.status === 200) {
+        alert(initialData ? "Updated Successfully!" : "Goal added successfully!")
         setFormData({ goalName: "", targetAmount: "", priority: "medium" });
-        if (onSuccess) onSuccess(); // List refresh karne ke liye
+        onSuccess(); // List refresh karne ke liye
         onClose();
       }
     } catch (error) {

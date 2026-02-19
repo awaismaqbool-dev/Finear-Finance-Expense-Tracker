@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { BanknoteArrowDown, Plus,Pencil, Trash } from "lucide-react";
+import { BanknoteArrowDown, Plus, Pencil, Trash } from "lucide-react";
 import {
   BarChart,
   Bar,
@@ -12,10 +12,17 @@ import TransactionPopup from "../../components/popups/TransactionPopup";
 import API from "../../../api";
 import { useEffect } from "react";
 import AddGoalPopUp from "../../components/popups/AddGoalPopup";
+import WithdrawSavingsPopup from "../../components/popups/WithdrawSavingsPopup";
+import AddMoneyGoal from "../../components/popups/AddMoneyGoalPopup";
+import DeleteGoalPopup from "../../components/popups/DeleteGoalPopUp";
 
 const Savings = () => {
   const [isPopUpOpen, setIsPopUpOpen] = useState(false);
   const [isGoalPopUp, setIsGoalPopUpOpen] = useState(false);
+  const [isGoalDelPopUpOpen, setGoalDelPopUpOpen] = useState(false);
+  const [selectedGoal, setselectedGoal] = useState(null);
+  const [isWithDrawPopUp, setWithDrawPopUpOpen] = useState(false);
+  const [isAddMoneyPopUp, setisAddMoneyPopUp] = useState(false);
   const [chartData, setChartData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [goals, setGoals] = useState([]);
@@ -25,42 +32,72 @@ const Savings = () => {
       const response = await API.get(
         "/dashboard/get-transactions?type=savings",
       );
-      const resGoal = await API.get ("/dashboard/get-goals")
+      const resGoal = await API.get("/dashboard/get-goals");
       if (response.data.success) {
-  // 1. Pehle transactions ko safe kiya  (agar undefined ho toh empty array mil jaye ga)
-  const transactions = response.data?.transactions || [];
+        // 1. Pehle transactions ko safe kiya  (agar undefined ho toh empty array mil jaye ga)
+        const transactions = response.data?.transactions || [];
 
-  // 2. transactions hain bhi ya nahi
-  if (transactions.length > 0) {
-    const formattedChart = transactions
-      .slice(0, 7)
-      .map((t, index) => ({
-        // Yahan bhi transactions variable use karein
-        date: `${new Date(t.createdAt).toLocaleDateString("en-GB", { day: "numeric", month: "short" })} (#${transactions.length - index})`,
-        amount: Number(t.amount),
-      }))
-      .reverse();
+        // 2. transactions hain bhi ya nahi
+        if (transactions.length > 0) {
+          const formattedChart = transactions
+            .slice(0, 7)
+            .map((t, index) => ({
+              // Yahan bhi transactions variable use karein
+              date: `${new Date(t.createdAt).toLocaleDateString("en-GB", { day: "numeric", month: "short" })} (#${transactions.length - index})`,
+              amount: Number(t.amount),
+            }))
+            .reverse();
 
-    setChartData(formattedChart);
-  } else {
-    // Agar data khali hai toh chart ko empty array dein
-    setChartData([]);
-  }
-}
+          setChartData(formattedChart);
+        } else {
+          // Agar data khali hai toh chart ko empty array dein
+          setChartData([]);
+        }
+      }
       if (resGoal.data.success) {
-      setGoals(resGoal.data.goal);
-    }
+        setGoals(resGoal.data.goal);
+      }
     } catch (error) {
       console.error("Income fetch error:", error);
     } finally {
       setLoading(false);
     }
   };
-   useEffect(() => {
-      fetchSavingsData();
-    }, []);
-    if (loading)
-      return <div className="p-10 text-center">Loading Income Data...</div>;
+  useEffect(() => {
+    fetchSavingsData();
+  }, []);
+
+//open popup for editing funtion call
+  const openEditGoalPopup = (goalObject) => {
+      console.log("Goal selected in Parent:", goalObject);
+    setselectedGoal(goalObject); // Data set kiya
+    setIsGoalPopUpOpen(true); // Popup khola
+  };
+  //open popup for add goal funtion call
+  const openAddGoalPopup = () => {
+    setselectedGoal(null); // Data clear (taake empty form khule)
+    setIsGoalPopUpOpen(true);
+  };
+
+    const AddGoalMoneyPopup = (goalObject) => {
+  console.log("Goal selected in Parent:", goalObject); // Check karein yahan ID hai?
+  setselectedGoal(goalObject); 
+  setisAddMoneyPopUp(true);
+};
+    const DelGoalPopup = (goalObject) => {
+  console.log("Goal selected in Parent:", goalObject); // Check karein yahan ID hai?
+  setselectedGoal(goalObject); 
+  setGoalDelPopUpOpen(true);
+};
+
+if (loading) {
+    return (
+      <div className="h-screen w-full flex items-center justify-center bg-back-ground">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-primary"></div>
+        <span className="ml-3 text-primary font-medium">Loading Finear...</span>
+      </div>
+    );
+  }
   return (
     <div className="space-y-8 animate-in fade-in duration-500 pb-10">
       {/* 1. Recent Savings Card */}
@@ -73,19 +110,18 @@ const Savings = () => {
             </p>
           </div>
           <div className="flex flex-col gap-5 md:flex-row">
-                      <button
-            className="flex items-center gap-2 bg-secondary text-white px-4 py-2 rounded-xl text-sm font-bold shadow-lg shadow-blue-200 "
-          >
-            <BanknoteArrowDown size={18} /> withdraw  Money
-          </button>
-          <button
-            onClick={() => setIsPopUpOpen(true)}
-            className="flex items-center gap-2 bg-secondary text-white px-4 py-2 rounded-xl text-sm font-bold shadow-lg shadow-blue-200"
-          >
-            <Plus size={18} /> Add Savings
-          </button>
+            <button 
+            onClick={()=>setWithDrawPopUpOpen(true)}
+            className="flex items-center gap-2 bg-secondary text-white px-4 py-2 rounded-xl text-sm font-bold shadow-lg shadow-blue-200 ">
+              <BanknoteArrowDown size={18} /> withdraw Money
+            </button>
+            <button
+              onClick={() => setIsPopUpOpen(true)}
+              className="flex items-center gap-2 bg-secondary text-white px-4 py-2 rounded-xl text-sm font-bold shadow-lg shadow-blue-200"
+            >
+              <Plus size={18} /> Add Savings
+            </button>
           </div>
-
         </div>
 
         <div className="h-75 w-full">
@@ -108,7 +144,9 @@ const Savings = () => {
                 tickLine={false}
                 tick={{ fill: "#9ca3af", fontSize: 12 }}
                 domain={[0, "auto"]}
-                tickFormatter={(value) => value >= 1000 ? `${(value/1000).toFixed(0)}k` : value}
+                tickFormatter={(value) =>
+                  value >= 1000 ? `${(value / 1000).toFixed(0)}k` : value
+                }
               />
               <Bar
                 dataKey="amount"
@@ -125,8 +163,12 @@ const Savings = () => {
       <div className="bg-white p-8 rounded-3xl">
         <div className="flex justify-between items-center mb-10">
           <h2 className="text-2xl font-medium text-gray-400">Active Goals</h2>
-           <button className="bg-secondary text-white px-6 py-2 rounded-xl font-bold shadow-lg hover:scale-105 transition-all"
-          onClick={()=>{setIsGoalPopUpOpen(true)}}>
+          <button
+            className="bg-secondary text-white px-6 py-2 rounded-xl font-bold shadow-lg hover:scale-105 transition-all"
+            onClick={() => {
+              openAddGoalPopup();
+            }}
+          >
             + Add Goal
           </button>
         </div>
@@ -145,7 +187,8 @@ const Savings = () => {
                 <div className="flex justify-between items-end mb-4">
                   <div>
                     <h3 className="text-2xl font-bold text-primary mb-1">
-                      {goal.goalName.charAt(0).toUpperCase()+goal.goalName.slice(1)}
+                      {goal.goalName.charAt(0).toUpperCase() +
+                        goal.goalName.slice(1)}
                     </h3>
                     <p className="text-gray-400 font-medium">
                       Priority:{" "}
@@ -154,19 +197,23 @@ const Savings = () => {
                   </div>
                   <div className="text-right">
                     <div className="flex flex-row justify-between mb-1 rounded-lg bg-gray-100 px-2 items-center">
-                                        <div
-                                    
-                                          className="cursor-pointer hover:text-secondary transition-colors p-1"
-                                        >
-                                          <Pencil size={18} />
-                                        </div>
-                                        <div
-                                        className="cursor-pointer hover:text-secondary transition-colors p-1">
-                                          <Trash size={18} />
-                                        </div>
-                                        <div className="cursor-pointer hover:text-secondary transition-colors p-1 font-semibold">
-                                          + Add Money
-                                        </div>
+                      <div 
+                      onClick={()=>{
+                        openEditGoalPopup(goal)
+                      }}
+                      className="cursor-pointer hover:text-secondary transition-colors p-1">
+                        <Pencil size={18} />
+                      </div>
+                      <div 
+                      onClick={()=>{DelGoalPopup(goal)}}
+                      className="cursor-pointer hover:text-secondary transition-colors p-1">
+                        <Trash size={18} />
+                      </div>
+                      <div 
+                       onClick={()=>{AddGoalMoneyPopup(goal)}}
+                      className="cursor-pointer hover:text-secondary transition-colors p-1 font-semibold ">
+                        + Add Money
+                      </div>
                     </div>
 
                     <p className="text-gray-400 font-medium">
@@ -214,8 +261,27 @@ const Savings = () => {
         onSuccess={fetchSavingsData}
       />
       <AddGoalPopUp
-              isOpen={isGoalPopUp}
+        isOpen={isGoalPopUp}
         onClose={() => setIsGoalPopUpOpen(false)}
+        initialData={selectedGoal}
+                onSuccess={fetchSavingsData}
+      />
+      <WithdrawSavingsPopup
+              isOpen={isWithDrawPopUp}
+        onClose={() => setWithDrawPopUpOpen(false)}
+                onSuccess={fetchSavingsData}
+      />
+      <AddMoneyGoal
+      isOpen={isAddMoneyPopUp}
+        onClose={() => setisAddMoneyPopUp(false)}
+        onSuccess={fetchSavingsData}
+        selectedGoal={selectedGoal}
+      />
+            <DeleteGoalPopup
+      isOpen={isGoalDelPopUpOpen}
+      onClose={() => setGoalDelPopUpOpen(false)}
+      selectedGoal={selectedGoal}
+      onSuccess={fetchSavingsData}
       />
     </div>
   );

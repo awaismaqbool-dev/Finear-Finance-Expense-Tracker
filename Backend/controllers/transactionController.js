@@ -222,7 +222,7 @@ export const withdrawSavings = async (req, res) => {
 
     // 2. savings se minus karo aur Target (Hand/Bank) mein plus karo
     const balanceField =
-      targetSource === "Bank" ? "bankBalance" : "handBalance";
+      targetSource === "bank" ? "bankBalance" : "handBalance";
 
     profile.flexibleSavings -= Number(amount);
     profile[balanceField] += Number(amount);
@@ -241,7 +241,7 @@ export const withdrawSavings = async (req, res) => {
 
     res.status(200).json({
       success: true,
-      message: `${amount} PKR Gullak se nikaal kar aapke ${targetSource} balance mein daal diye gaye hain.`,
+      message: `${amount} PKR Amount has transferred to ${targetSource} balance `,
     });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });

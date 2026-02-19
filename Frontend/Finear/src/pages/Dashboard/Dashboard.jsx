@@ -14,7 +14,7 @@ const Dashboard = () => {
   const fetchDashboardData = async () => {
     try {
       const response = await API.get("/dashboard/"); // Ensure correct endpoint
-      if (response.data.success) {
+      if (response.data.success || response.status === 200) {
         setData(response.data);
         console.log(setData.monthlyBudget);
         
@@ -35,7 +35,7 @@ const Dashboard = () => {
     if (newBudget && !isNaN(newBudget)) {
       try {
         const res = await API.post("/dashboard/updateBudget", { budget: Number(newBudget) });
-        if (res.data.success) {
+        if (res.data.success || response.status === 200) {
           fetchDashboardData(); // Refresh data
           alert("Budget updated successfully!");
         }
