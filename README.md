@@ -6,6 +6,12 @@
 
 This project demonstrates scalable architecture, complex state management, and the integration of data analysis tools to provide actionable financial insights.
 
+---
+## 🎨 Project Presentation & Case Study
+Check out the full design process and high-fidelity wireframes on **Behance**:
+[![Behance](https://img.shields.io/badge/Behance-View%20Presentation-0057ff?style=for-the-badge&logo=behance)](https://www.behance.net/gallery/244308151/Finear-Personal-Expenses-and-Income-Tracker)
+---
+
 ##  Key Features
 
 ##  Landing Page & Web Interface
