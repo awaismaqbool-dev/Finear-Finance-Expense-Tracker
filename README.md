@@ -1,7 +1,7 @@
 # 🚀 Finear – Personal Finance & Wealth Management Dashboard
 
-![Project Banner](/ScreenShorts/home.png)
->
+<img src="./ScreenShorts/finear_gif.gif"/>
+
 **Finear** is a comprehensive full-stack financial management application designed to help users track income, manage expenses, and set smart savings goals. Built with the **MERN Stack** (MongoDB, Express, React, Node.js), it features real-time data visualization, secure authentication, and automated financial reporting.
 
 This project demonstrates scalable architecture, complex state management, and the integration of data analysis tools to provide actionable financial insights.
@@ -70,6 +70,71 @@ Beyond the dashboard, the project includes a fully responsive multi-page marketi
 
 ---
 
+
+
+
+
+# MERN Authentication System
+
+A robust backend authentication system built with the MERN stack. Features secure User Management, JWT-based sessions, and OTP verification for enhanced security. Designed with protected routes and password hashing to ensure industry-standard safety.
+
+<img src="./screenshots/layout_gif.gif"/>
+
+A complete authentication system with:
+- User registration with email
+- User Login
+- Email OTP verification
+- Secure login with JWT
+- Protected routes
+- Password hashing
+
+## Tech Stack
+![](https://img.shields.io/badge/Node.js-339933?style=for-the-badge&logo=node.js&logoColor=white)
+![](https://img.shields.io/badge/Express.js-000000?style=for-the-badge&logo=express&logoColor=white)
+![](https://img.shields.io/badge/MongoDB-47A248?style=for-the-badge&logo=mongodb&logoColor=white)
+![](https://img.shields.io/badge/JWT-000000?style=for-the-badge&logo=json-web-tokens&logoColor=white)
+![](https://img.shields.io/badge/Nodemailer-339933?style=for-the-badge&logo=nodemailer&logoColor=white)
+![](https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black)
+![](https://img.shields.io/badge/HTML5-E34F26?style=for-the-badge&logo=html5&logoColor=white)
+![](https://img.shields.io/badge/CSS3-1572B6?style=for-the-badge&logo=css3&logoColor=white)
+
+## Features
+- Secure user registration
+- Login with email & password
+- OTP verification via email
+- Protected routes using JWT
+
+## Demo Video
+[![Project Auth Demo](./ScreenShorts/logoWhite.svg)](https://drive.google.com/file/d/1sOHZO_T1gREbBMmAgJVAnOIlxW2louMo/view?usp=drive_link)
+
+*Click the logo above to watch the full demo on Google Drive.*
+- User registration
+- OTP received on email
+- OTP verification
+- Login
+- Accessing protected routes
+
+## Project Structure
+
+```text
+auth-system/
+│
+├── backend/
+│   ├── controllers/
+│   ├── models/
+│   ├── routes/
+│   ├── middleware/
+│   └── server.js
+│
+├── frontend/
+│   ├── src/
+│   └── index.html
+│
+├── .gitignore
+├── README.md
+└── package.json
+```
+
 ##  Getting Started
 
 Follow these steps to run the project locally.
@@ -79,12 +144,13 @@ Follow these steps to run the project locally.
 - MongoDB (Local or Atlas URL)
 
 ### 1. Clone the Repository
--git clone https://github.com/awaismaqbool-dev/Finear-Finance-Expense-Tracker.git
+-git clone https://github.com/dev-awais-maqbool/Finear-Personal-Finance-Dashboard.git
 ## 2. Backend Setup 
 cd backend
 npm install
 
 -Create a .env file in the server folder and add:
+```bash
 PORT=8080
 MONGO_URI=your_mongodb_connection_string
 JWT_SECRET=your_super_secret_key
@@ -92,29 +158,36 @@ NODE_ENV=development  # NODE_ENV=production
 SMTP_USER=your_SMTP_user_id
 SMTP_PASS=your_SMTP_Password
 SENDER_EMAIL=your_user_id
-
--Run the server:
-npm start
-
+```
+```
+-Run the server: node server.js
+```
 ## 3. Frontend Setup
+```
 cd frontend
+
 cd finear
+
 npm install
+
 npm run dev
-```bash
+```
+
+``` bash
 API Endpoints (Brief)
 
-Method	Endpoint	Description	
-POST	/auth/login	User Login & Token Generation	
-POST	/auth/register	New User Registration	
-GET	/dashboard/get-transactions	Fetch Income/Expense/Savings	
-POST	/dashboard/add-transaction	Add new financial record	
-POST	/dashboard/create-goal	Initialize a new savings goal	
-GET	/dashboard/export-sheet	Download Excel report (Blob)	
+Method	Endpoint	                    Description	
+POST	/auth/login	                    User Login & Token Generation	
+POST	/auth/register	                    New User Registration	
+GET	/dashboard/get-transactions	    Fetch Income/Expense/Savings	
+POST	/dashboard/add-transaction	    Add new financial record	
+POST	/dashboard/create-goal	            Initialize a new savings goal	
+GET	/dashboard/export-sheet	            Download Excel report (Blob)	
+```
 
+## Author
 
-👨‍💻 Author
-Awais Full-Stack Developer | MERN Stack Enthusiast
+<h3>Awais Maqbool</h3>(Full-Stack Developer | MERN Stack )
 
 
 

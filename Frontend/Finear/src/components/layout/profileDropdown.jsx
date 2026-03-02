@@ -1,10 +1,18 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Camera, Edit3, Lock, CheckCircle } from "lucide-react";
 import API from "../../../api";
 import { useRef } from "react";
+import EditProfilePopUp from "../popups/EditProfilePopUp";
 
 const ProfileDropdown = ({ user, isOpen, onClose, img }) => {
+  const [isEditPopUpOpen, setEditPopUpOpen] = useState(false);
   const fileInputRef = useRef(null);
+
+    useEffect(() => {
+  if (!isOpen) {
+    setEditPopUpOpen(false);
+  }
+}, [isOpen]);
   // uploading image funtion
   const handleImageChange = async (e) => {
     const file = e.target.files[0];
@@ -12,7 +20,7 @@ const ProfileDropdown = ({ user, isOpen, onClose, img }) => {
       alert("file note selected");
       return;
     }
-    const previewUrl = URL.createObjectURL(file);
+    // const previewUrl = URL.createObjectURL(file);
     const formData = new FormData();
     formData.append("image", file);
     try {
@@ -28,8 +36,8 @@ const ProfileDropdown = ({ user, isOpen, onClose, img }) => {
       alert("Failed to upload image.");
     }
   };
-  if (!isOpen) return null;
 
+if (!isOpen) return null;
   return (
     <div className="fixed inset-0 z-50 flex justify-end p-4 md:p-10 pointer-events-none">
       {/* Background Blur Overlay */}
@@ -75,7 +83,9 @@ const ProfileDropdown = ({ user, isOpen, onClose, img }) => {
 
         {/* Action Buttons */}
         <div className="w-full space-y-3 mb-6">
-          <button className="w-full flex items-center justify-center gap-2 bg-secondary/20 text-secondary font-bold py-3 rounded-xl hover:bg-secondary hover:text-white transition-all cursor-pointer">
+          <button 
+          onClick={()=>{setEditPopUpOpen(true)}}
+          className="w-full flex items-center justify-center gap-2 bg-secondary/20 text-secondary font-bold py-3 rounded-xl hover:bg-secondary hover:text-white transition-all cursor-pointer">
             <Edit3 size={18} /> Edit Name
           </button>
           <button className="w-full flex items-center justify-center gap-2 bg-back-ground text-secondary font-bold py-3 rounded-xl border border-gray-100 hover:bg-gray-100 transition-all cursor-pointer">
@@ -89,6 +99,11 @@ const ProfileDropdown = ({ user, isOpen, onClose, img }) => {
           <CheckCircle size={16} className="text-green-500 fill-green-500/20" />
         </div>
       </div>
+      <EditProfilePopUp
+            isOpen={isEditPopUpOpen }
+        onClose={() => setEditPopUpOpen(false)}
+        // onSuccess={fetchSavingsData}
+      />
     </div>
   );
 };
