@@ -104,10 +104,6 @@ A complete authentication system with:
 - OTP verification via email
 - Protected routes using JWT
 
-## Demo Video
-[![Project Auth Demo](./ScreenShorts/logoWhite.svg)](https://drive.google.com/file/d/1sOHZO_T1gREbBMmAgJVAnOIlxW2louMo/view?usp=drive_link)
-
-*Click the logo above to watch the full demo on Google Drive.*
 - User registration
 - OTP received on email
 - OTP verification
