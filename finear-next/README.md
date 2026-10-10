@@ -10,7 +10,7 @@ This is the replacement full-stack application. Its interface and server API bot
 
 ## Local setup
 
-1. Copy `.env.example` to `.env` and set `DATABASE_URL`, MySQL connection fields, and a random `JWT_SECRET` with at least 32 characters.
+1. Copy `.env.example` to `.env` and set `DATABASE_URL` and a random `JWT_SECRET` with at least 32 characters. The Prisma driver reads host, port, database, username, and password from `DATABASE_URL`; matching `DATABASE_HOST`, `DATABASE_PORT`, `DATABASE_NAME`, `DATABASE_USER`, and `DATABASE_PASSWORD` values may optionally override those URL fields. `DATABASE_POOL_SIZE` defaults to 20 and can be tuned to the database server's capacity.
 2. Run `npm install`.
 3. Generate the Prisma client and apply the checked-in schema migration:
 

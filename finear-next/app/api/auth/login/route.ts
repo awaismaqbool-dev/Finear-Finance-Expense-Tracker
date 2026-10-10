@@ -15,7 +15,7 @@ export async function POST(request: Request) {
     }
     if (!user.isVerified) return jsonError("Verify your email before signing in.", 403);
 
-    await setSessionCookie(user.id);
+    await setSessionCookie(String(user.id));
     return NextResponse.json({ success: true, message: "Welcome back." });
   } catch (error) {
     return serverError(error);

@@ -65,7 +65,7 @@ export function Overview() {
   return (
     <div className="dashboard-page">
       <div className="page-heading-row">
-        <div><p className="overline">YOUR FINANCIAL PICTURE</p><h1>Good to see you, {data.profile.name.split(" ")[0]} <span className="wave">✳</span></h1><p className="page-subtitle">Here’s what’s happening with your money.</p></div>
+        <div><p className="overline">YOUR FINANCIAL PICTURE</p><h1>Good to see you, {data.profile.name.split(" ")[0]} <span className="wave"></span></h1><p className="page-subtitle">Here’s what’s happening with your money.</p></div>
         <Link href="/dashboard/income" className="button button-primary"><Plus size={17} /> Add transaction</Link>
       </div>
       {error && <div className="notice notice-error" role="alert">{error}</div>}

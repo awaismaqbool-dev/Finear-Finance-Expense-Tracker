@@ -45,8 +45,8 @@ export async function verifyOtp(email: string, otp: string, purpose: OtpPurpose)
       data: { isVerified: true, verificationOtpHash: null, verificationOtpExpiry: null },
     });
   } else {
-    return user.id;
+    return String(user.id);
   }
 
-  return user.id;
+  return String(user.id);
 }

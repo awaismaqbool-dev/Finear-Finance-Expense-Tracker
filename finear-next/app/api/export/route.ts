@@ -13,7 +13,7 @@ export async function GET(request: Request) {
     const requestedType = query.get("type");
     if (requestedType && !["income", "expense", "savings"].includes(requestedType)) return jsonError("Invalid transaction type.");
     const transactions = await prisma.transaction.findMany({
-      where: { userId: user.id, ...(requestedType ? { type: requestedType as "income" | "expense" | "savings" } : {}) },
+      where: { userId: Number(user.id), ...(requestedType ? { type: requestedType as "income" | "expense" | "savings" } : {}) },
       orderBy: { createdAt: "desc" },
     });
 

@@ -13,7 +13,7 @@ export async function POST(request: Request) {
     if (!userId) return jsonError("The code is invalid or has expired.", 400);
     const passwordHash = await bcrypt.hash(parsed.data.password, 12);
     await prisma.user.update({
-      where: { id: userId },
+      where: { id: Number(userId) },
       data: { passwordHash, resetOtpHash: null, resetOtpExpiry: null },
     });
     return NextResponse.json({ success: true, message: "Password updated. You can sign in now." });

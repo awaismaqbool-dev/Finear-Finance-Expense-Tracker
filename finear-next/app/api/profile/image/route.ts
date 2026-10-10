@@ -33,7 +33,7 @@ export async function POST(request: Request) {
     await mkdir(uploadDirectory, { recursive: true });
     await writeFile(path.join(uploadDirectory, filename), bytes, { flag: "wx" });
     const imagePath = `uploads/${filename}`;
-    await prisma.user.update({ where: { id: user.id }, data: { imagePath } });
+    await prisma.user.update({ where: { id: Number(user.id) }, data: { imagePath } });
     return NextResponse.json({ success: true, data: { imagePath }, message: "Profile photo updated." });
   } catch (error) {
     return serverError(error);

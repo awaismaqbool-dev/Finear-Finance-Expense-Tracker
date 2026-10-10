@@ -15,6 +15,10 @@ function getJwtSecret(): string {
   return secret;
 }
 
+export function assertSessionConfiguration(): void {
+  getJwtSecret();
+}
+
 export function signSession(userId: string): string {
   return jwt.sign({ id: userId }, getJwtSecret(), { expiresIn: SESSION_MAX_AGE_SECONDS });
 }
@@ -48,14 +52,15 @@ export async function getSessionUser(): Promise<SessionUser | null> {
 
   try {
     const decoded = jwt.verify(token, getJwtSecret());
-    const userId = typeof decoded === "object" ? (decoded as JwtPayload & { id?: string }).id : undefined;
-    if (!userId) return null;
+    const tokenUserId = typeof decoded === "object" ? (decoded as JwtPayload & { id?: string | number }).id : undefined;
+    const userId = Number(tokenUserId);
+    if (!Number.isSafeInteger(userId) || userId < 1) return null;
 
     const user = await prisma.user.findUnique({
       where: { id: userId },
       select: { id: true, name: true, email: true, isVerified: true, imagePath: true },
     });
-    return user;
+    return user ? { ...user, id: String(user.id) } : null;
   } catch {
     return null;
   }

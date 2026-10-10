@@ -13,7 +13,7 @@ export async function PATCH(request: Request) {
     if (!parsed.success) return validationError(parsed.error);
 
     const updated = await prisma.user.update({
-      where: { id: user.id },
+      where: { id: Number(user.id) },
       data: { name: parsed.data.name },
       select: { id: true, name: true, email: true, isVerified: true, imagePath: true },
     });
