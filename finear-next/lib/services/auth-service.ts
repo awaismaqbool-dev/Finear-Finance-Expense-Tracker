@@ -6,13 +6,17 @@ import { otpEmail, sendEmail } from "@/lib/services/email-service";
 
 type OtpPurpose = "verify" | "reset";
 
-export async function issueOtp(email: string, purpose: OtpPurpose): Promise<{ debugOtp?: string }> {
+export async function issueOtp(email: string, purpose: OtpPurpose): Promise<void> {
   const user = await prisma.user.findUnique({ where: { email } });
-  if (!user) return {};
+  if (!user) return;
 
   const otp = String(randomInt(100000, 1000000));
   const otpHash = await bcrypt.hash(otp, 10);
   const expiry = new Date(Date.now() + 30 * 60 * 1000);
+
+  const emailMessage = otpEmail(user.name, otp, purpose);
+  const delivered = await sendEmail({ ...emailMessage, to: user.email });
+  if (!delivered) throw new Error("SMTP settings are required to send authentication codes.");
 
   await prisma.user.update({
     where: { id: user.id },
@@ -20,14 +24,6 @@ export async function issueOtp(email: string, purpose: OtpPurpose): Promise<{ de
       ? { verificationOtpHash: otpHash, verificationOtpExpiry: expiry }
       : { resetOtpHash: otpHash, resetOtpExpiry: expiry },
   });
-
-  const emailMessage = otpEmail(user.name, otp, purpose);
-  const delivered = await sendEmail({ ...emailMessage, to: user.email });
-  if (!delivered && process.env.NODE_ENV === "production") {
-    throw new Error("SMTP settings are required to send authentication codes in production.");
-  }
-
-  return process.env.NODE_ENV === "production" ? {} : { debugOtp: otp };
 }
 
 export async function verifyOtp(email: string, otp: string, purpose: OtpPurpose): Promise<string | null> {

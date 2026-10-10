@@ -29,7 +29,7 @@ export async function POST(request: Request) {
 
     const savedExtension = isJpeg ? "jpg" : "png";
     const filename = `${user.id}-${randomUUID()}.${savedExtension}`;
-    const uploadDirectory = path.resolve(process.cwd(), process.env.UPLOAD_DIR ?? "./public/uploads");
+    const uploadDirectory = path.join(process.cwd(), "public", "uploads");
     await mkdir(uploadDirectory, { recursive: true });
     await writeFile(path.join(uploadDirectory, filename), bytes, { flag: "wx" });
     const imagePath = `uploads/${filename}`;

@@ -82,11 +82,11 @@ function Signup() {
         )}
         <InputFiled
           lable="Enter Your Password"
-          placeholder="Minimum 8 characters"
+          placeholder="Minimum 5 characters"
           type="password"
           {...register("password", {
             required: "Password is Requried",
-            minLength: { value: 8, message: "password must be 8+ chrachter" },
+            minLength: { value: 5, message: "password must be 5+ chrachter" },
           })}
         />
         {errors.password && (

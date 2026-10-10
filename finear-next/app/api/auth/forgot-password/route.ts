@@ -7,8 +7,8 @@ export async function POST(request: Request) {
   try {
     const parsed = emailSchema.safeParse(await request.json());
     if (!parsed.success) return validationError(parsed.error);
-    const result = await issueOtp(parsed.data.email, "reset");
-    return NextResponse.json({ success: true, message: "If the account exists, a reset code has been sent.", ...(result.debugOtp ? { debugOtp: result.debugOtp } : {}) });
+    await issueOtp(parsed.data.email, "reset");
+    return NextResponse.json({ success: true, message: "If the account exists, a reset code has been sent." });
   } catch (error) {
     return serverError(error);
   }

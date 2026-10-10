@@ -10,8 +10,8 @@ export async function POST(request: Request) {
     if (!parsed.success) return validationError(parsed.error);
     const user = await prisma.user.findUnique({ where: { email: parsed.data.email } });
     if (!user || user.isVerified) return jsonError("A verification code cannot be sent for this account.", 400);
-    const result = await issueOtp(user.email, "verify");
-    return NextResponse.json({ success: true, message: "A new code has been sent.", ...(result.debugOtp ? { debugOtp: result.debugOtp } : {}) });
+    await issueOtp(user.email, "verify");
+    return NextResponse.json({ success: true, message: "A new code has been sent." });
   } catch (error) {
     return serverError(error);
   }

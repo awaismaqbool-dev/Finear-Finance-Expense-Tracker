@@ -12,12 +12,21 @@ export async function sendEmail(message: EmailMessage): Promise<boolean> {
   if (!SMTP_HOST || !SMTP_USER || !SMTP_PASS || !SENDER_EMAIL) return false;
 
   const port = Number(process.env.SMTP_PORT ?? 587);
-  const transporter = nodemailer.createTransport({
+  const encryption = (process.env.SMTP_ENCRYPTION ?? (port === 465 ? "ssl" : "starttls")).trim().toLowerCase();
+  const secure = encryption === "ssl" || encryption === "smtps";
+  const requireTLS = encryption === "tls" || encryption === "starttls";
+  const globalForMailer = globalThis as typeof globalThis & { finearMailer?: ReturnType<typeof nodemailer.createTransport> };
+  const transporter = globalForMailer.finearMailer ?? nodemailer.createTransport({
     host: SMTP_HOST,
     port,
-    secure: port === 465,
+    secure,
+    requireTLS,
+    pool: true,
+    maxConnections: 2,
+    maxMessages: 100,
     auth: { user: SMTP_USER, pass: SMTP_PASS },
   });
+  globalForMailer.finearMailer = transporter;
 
   await transporter.sendMail({ from: SENDER_EMAIL, ...message });
   return true;

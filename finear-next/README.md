@@ -25,7 +25,7 @@ This is the replacement full-stack application. Its interface and server API bot
    npm run dev
    ```
 
-Open http://localhost:3000. In development, when SMTP is not configured, the OTP is returned to the UI as a development-only code. Production requires SMTP configuration.
+Open http://localhost:3000. SMTP is required in every environment for email verification and password reset. Set `SMTP_ENCRYPTION` to `tls` for STARTTLS (commonly port 587), or `ssl` for implicit TLS (commonly port 465). Development OTP codes are never returned by the API or shown in the UI.
 
 ## Checks
 

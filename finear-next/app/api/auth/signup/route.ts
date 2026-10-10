@@ -13,8 +13,8 @@ export async function POST(request: Request) {
     const existing = await prisma.user.findUnique({ where: { email } });
     if (existing?.isVerified) return jsonError("An account with this email already exists.", 409);
     if (existing) {
-      const otp = await issueOtp(email, "verify");
-      return NextResponse.json({ success: true, message: "A verification code has been sent again.", ...(otp.debugOtp ? { debugOtp: otp.debugOtp } : {}) });
+      await issueOtp(email, "verify");
+      return NextResponse.json({ success: true, message: "A verification code has been sent again." });
     }
 
     const passwordHash = await bcrypt.hash(parsed.data.password, 12);
@@ -23,11 +23,10 @@ export async function POST(request: Request) {
       await tx.profile.create({ data: { userId: user.id } });
     });
 
-    const otp = await issueOtp(email, "verify");
+    await issueOtp(email, "verify");
     return NextResponse.json({
       success: true,
       message: "Account created. Enter the verification code to continue.",
-      ...(otp.debugOtp ? { debugOtp: otp.debugOtp } : {}),
     }, { status: 201 });
   } catch (error) {
     return serverError(error);
