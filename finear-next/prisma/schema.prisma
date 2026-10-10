@@ -1,0 +1,93 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "mysql"
+}
+
+enum TransactionType {
+  income
+  expense
+  savings
+}
+
+enum MoneySource {
+  cash
+  bank
+}
+
+enum GoalPriority {
+  high
+  medium
+  low
+}
+
+enum GoalStatus {
+  Active
+  Completed
+}
+
+model User {
+  id                    String        @id @default(cuid()) @db.VarChar(30)
+  name                  String        @db.VarChar(120)
+  email                 String        @unique @db.VarChar(191)
+  passwordHash          String        @db.VarChar(255)
+  isVerified            Boolean       @default(false)
+  imagePath             String        @default("profile_img.png") @db.VarChar(255)
+  verificationOtpHash   String?       @db.VarChar(255)
+  verificationOtpExpiry DateTime?     @db.DateTime(3)
+  resetOtpHash          String?       @db.VarChar(255)
+  resetOtpExpiry        DateTime?     @db.DateTime(3)
+  profile               Profile?
+  transactions          Transaction[]
+  goals                 Goal[]
+  createdAt             DateTime      @default(now()) @db.DateTime(3)
+  updatedAt             DateTime      @updatedAt @db.DateTime(3)
+}
+
+model Profile {
+  id               String   @id @default(cuid()) @db.VarChar(30)
+  userId           String   @unique @db.VarChar(30)
+  handBalance      Decimal  @default(0) @db.Decimal(12, 2)
+  bankBalance      Decimal  @default(0) @db.Decimal(12, 2)
+  flexibleSavings  Decimal  @default(0) @db.Decimal(12, 2)
+  monthlyBudget    Decimal  @default(0) @db.Decimal(12, 2)
+  currency         String   @default("PKR") @db.Char(3)
+  user             User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt        DateTime @default(now()) @db.DateTime(3)
+  updatedAt        DateTime @updatedAt @db.DateTime(3)
+}
+
+model Transaction {
+  id        String          @id @default(cuid()) @db.VarChar(30)
+  userId    String          @db.VarChar(30)
+  title     String          @db.VarChar(191)
+  amount    Decimal         @db.Decimal(12, 2)
+  type      TransactionType
+  source    MoneySource
+  category  String          @default("general") @db.VarChar(100)
+  user      User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime        @default(now()) @db.DateTime(3)
+  updatedAt DateTime        @updatedAt @db.DateTime(3)
+
+  @@index([userId, createdAt])
+  @@index([userId, type, createdAt])
+}
+
+model Goal {
+  id           String       @id @default(cuid()) @db.VarChar(30)
+  userId       String       @db.VarChar(30)
+  goalName     String       @db.VarChar(191)
+  targetAmount Decimal      @db.Decimal(12, 2)
+  savedAmount  Decimal      @default(0) @db.Decimal(12, 2)
+  priority     GoalPriority
+  status       GoalStatus   @default(Active)
+  user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt    DateTime     @default(now()) @db.DateTime(3)
+  updatedAt    DateTime     @updatedAt @db.DateTime(3)
+
+  @@index([userId, createdAt])
+  @@index([userId, status])
+}

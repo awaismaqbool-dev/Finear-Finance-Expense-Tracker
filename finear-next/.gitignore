@@ -24,3 +24,7 @@ pnpm-debug.log*
 
 # editor
 .vscode
+.env
+/public/uploads
+/generated
+tsconfig.tsbuildinfo
