@@ -4,10 +4,11 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
-import { BarChart3, Bell, ChevronDown, CircleHelp, LayoutDashboard, LogOut, Menu, PiggyBank, ReceiptText, Settings, WalletCards, X, UserRoundPen } from "lucide-react";
+import { BarChart3, Bell, ChevronDown, CircleHelp, LayoutDashboard, LogOut, Menu, PiggyBank, ReceiptText, Settings, X, UserRoundPen } from "lucide-react";
 import { api, getErrorMessage } from "@/lib/api/client";
 import type { SessionUser } from "@/lib/types/api";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { useToast } from "@/components/ui/toast-provider";
 
 const navItems = [
   { href: "/dashboard", label: "Overview", icon: LayoutDashboard, exact: true },
@@ -19,8 +20,8 @@ const navItems = [
 export function DashboardShell({ user, children }: { user: SessionUser; children: React.ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
+  const toast = useToast();
   const [menuOpen, setMenuOpen] = useState(false);
-  const [notice, setNotice] = useState("");
   const [editingName, setEditingName] = useState(false);
   const [name, setName] = useState(user.name);
   const [savingName, setSavingName] = useState(false);
@@ -28,10 +29,11 @@ export function DashboardShell({ user, children }: { user: SessionUser; children
   async function logout() {
     try {
       await api.post("/auth/logout");
+      toast.success("You’re signed out.");
       router.replace("/login");
       router.refresh();
     } catch (error) {
-      setNotice(getErrorMessage(error, "Could not sign out."));
+      toast.error(getErrorMessage(error, "Could not sign out."));
     }
   }
 
@@ -41,22 +43,23 @@ export function DashboardShell({ user, children }: { user: SessionUser; children
     body.set("image", file);
     try {
       await api.post("/profile/image", body, { headers: { "Content-Type": "multipart/form-data" } });
+      toast.success("Profile photo updated.");
       router.refresh();
     } catch (error) {
-      setNotice(getErrorMessage(error, "Could not update your photo."));
+      toast.error(getErrorMessage(error, "Could not update your photo."));
     }
   }
 
   async function saveName(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setSavingName(true);
-    setNotice("");
     try {
       await api.patch("/profile", { name });
+      toast.success("Your name was updated.");
       setEditingName(false);
       router.refresh();
     } catch (error) {
-      setNotice(getErrorMessage(error, "Could not update your name."));
+      toast.error(getErrorMessage(error, "Could not update your name."));
     } finally {
       setSavingName(false);
     }
@@ -68,7 +71,7 @@ export function DashboardShell({ user, children }: { user: SessionUser; children
   return (
     <div className="dashboard-frame">
       <aside className={`sidebar ${menuOpen ? "sidebar-open" : ""}`}>
-        <Link href="/dashboard" className="brand sidebar-brand"><span className="brand-mark"><WalletCards size={20} /></span>Finear</Link>
+        <Link href="/dashboard" className="brand sidebar-brand"><Image className="brand-image" src="/logo.svg" alt="Finear" width={162} height={39} priority /></Link>
         <div className="workspace-label">WORKSPACE</div>
         <nav className="side-nav" aria-label="Main navigation">
           {navItems.map(({ href, label, icon: Icon, exact }) => {
@@ -108,7 +111,6 @@ export function DashboardShell({ user, children }: { user: SessionUser; children
           </div>
         </header>
         <main className="page-content">
-          {notice && <div className="notice notice-error" role="alert">{notice}<button onClick={() => setNotice("")} aria-label="Dismiss">×</button></div>}
           {children}
         </main>
         <nav className="mobile-nav" aria-label="Mobile navigation">

@@ -7,10 +7,12 @@ import { Area, AreaChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YA
 import { api, getErrorMessage } from "@/lib/api/client";
 import type { DashboardData } from "@/lib/types/domain";
 import { Button } from "@/components/ui/button";
+import { useToast } from "@/components/ui/toast-provider";
 
 const money = (value: number) => new Intl.NumberFormat("en-PK", { style: "currency", currency: "PKR", maximumFractionDigits: 0 }).format(value);
 
 export function Overview() {
+  const toast = useToast();
   const [data, setData] = useState<DashboardData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -49,10 +51,11 @@ export function Overview() {
     setSavingBudget(true);
     try {
       await api.put("/dashboard/budget", { budget: Number(budget) });
+      toast.success("Monthly budget saved.");
       setBudgetOpen(false);
       await load();
     } catch (issue) {
-      setError(getErrorMessage(issue, "Budget could not be saved."));
+      toast.error(getErrorMessage(issue, "Budget could not be saved."));
     } finally {
       setSavingBudget(false);
     }

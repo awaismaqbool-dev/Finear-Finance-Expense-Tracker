@@ -6,6 +6,7 @@ import { ArrowDownToLine, ArrowUpRight, Pencil, PiggyBank, Plus, Target, Trash2,
 import { api, getErrorMessage } from "@/lib/api/client";
 import type { DashboardData, GoalPriority, GoalRecord, MoneySource, TransactionRecord } from "@/lib/types/domain";
 import { Button } from "@/components/ui/button";
+import { useToast } from "@/components/ui/toast-provider";
 
 type SavingsMode = "add-savings" | "withdraw" | "goal" | "contribute";
 type GoalDraft = { goalName: string; targetAmount: string; priority: GoalPriority };
@@ -13,6 +14,7 @@ const emptyGoal: GoalDraft = { goalName: "", targetAmount: "", priority: "medium
 const money = (value: number) => new Intl.NumberFormat("en-PK", { style: "currency", currency: "PKR", maximumFractionDigits: 0 }).format(value);
 
 export function SavingsManager() {
+  const toast = useToast();
   const [dashboard, setDashboard] = useState<DashboardData | null>(null);
   const [goals, setGoals] = useState<GoalRecord[]>([]);
   const [transactions, setTransactions] = useState<TransactionRecord[]>([]);
@@ -96,10 +98,16 @@ export function SavingsManager() {
       } else if (goal) {
         await api.post("/goals/contribute", { goalId: goal.id, amount: Number(amount), source });
       }
+      const successMessage = mode === "goal"
+        ? goal ? "Savings goal updated." : "Savings goal created."
+        : mode === "add-savings" ? "Flexible savings updated."
+          : mode === "withdraw" ? "Savings moved to your balance."
+            : "Goal contribution added.";
+      toast.success(successMessage);
       closeModal();
       await load();
     } catch (issue) {
-      setError(getErrorMessage(issue, "This savings update could not be completed."));
+      toast.error(getErrorMessage(issue, "This savings update could not be completed."));
     } finally {
       setBusy(false);
     }
@@ -109,9 +117,10 @@ export function SavingsManager() {
     if (!window.confirm(`Delete “${item.goalName}”? Its saved amount will return to flexible savings.`)) return;
     try {
       await api.delete(`/goals/${item.id}`);
+      toast.success("Savings goal deleted.");
       await load();
     } catch (issue) {
-      setError(getErrorMessage(issue, "This goal could not be deleted."));
+      toast.error(getErrorMessage(issue, "This goal could not be deleted."));
     }
   }
 

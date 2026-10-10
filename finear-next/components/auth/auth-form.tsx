@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useState, type FormEvent } from "react";
 import {
@@ -9,9 +10,9 @@ import {
   BadgeCheck,
   Eye,
   EyeOff,
-  WalletCards,
 } from "lucide-react";
 import { api, getErrorMessage } from "@/lib/api/client";
+import { useToast } from "@/components/ui/toast-provider";
 
 export type AuthMode = "login" | "signup" | "verify" | "forgot" | "reset";
 
@@ -55,48 +56,46 @@ const copy: Record<
 export function AuthForm({
   mode,
   initialEmail = "",
-  resetSuccess = false,
 }: {
   mode: AuthMode;
   initialEmail?: string;
-  resetSuccess?: boolean;
 }) {
   const router = useRouter();
+  const toast = useToast();
   const [email, setEmail] = useState(initialEmail);
   const [name, setName] = useState("");
   const [password, setPassword] = useState("");
   const [otp, setOtp] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [busy, setBusy] = useState(false);
-  const [message, setMessage] = useState(
-    resetSuccess
-      ? "Your password has been reset. Sign in with your new password."
-      : "",
-  );
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setBusy(true);
-    setMessage("");
     try {
       if (mode === "login") {
         await api.post("/auth/login", { email, password });
+        toast.success("You’re signed in.");
         router.push("/dashboard");
       } else if (mode === "signup") {
         await api.post("/auth/signup", { name, email, password });
+        toast.success("Verification code sent to your email.");
         router.push(`/verify?email=${encodeURIComponent(email)}`);
       } else if (mode === "verify") {
         await api.post("/auth/verify-email", { email, otp });
+        toast.success("Your email is verified.");
         router.push("/dashboard");
       } else if (mode === "forgot") {
         await api.post("/auth/forgot-password", { email });
+        toast.info("If the account exists, a reset code is on its way.");
         router.push(`/reset-password?email=${encodeURIComponent(email)}`);
       } else {
         await api.post("/auth/reset-password", { email, otp, password });
-        router.push("/login?reset=success");
+        toast.success("Password updated. Sign in with your new password.");
+        router.push(`/login?email=${encodeURIComponent(email)}`);
       }
     } catch (error) {
-      setMessage(getErrorMessage(error));
+      toast.error(getErrorMessage(error));
     } finally {
       setBusy(false);
     }
@@ -104,12 +103,11 @@ export function AuthForm({
 
   async function resendOtp() {
     setBusy(true);
-    setMessage("");
     try {
       await api.post("/auth/resend-otp", { email });
-      setMessage("A new code is ready. Check your email.");
+      toast.success("A new verification code was sent.");
     } catch (error) {
-      setMessage(getErrorMessage(error));
+      toast.error(getErrorMessage(error));
     } finally {
       setBusy(false);
     }
@@ -120,10 +118,7 @@ export function AuthForm({
     <main className="auth-screen">
       <section className="auth-showcase">
         <Link className="brand brand-light" href="/login">
-          <span className="brand-mark">
-            <WalletCards size={20} />
-          </span>
-          Finear
+          <Image className="brand-image" src="/logo-white.svg" alt="Finear" width={162} height={39} priority />
         </Link>
         <div className="showcase-copy">
           <span className="overline">A clearer view of your finances</span>
@@ -148,10 +143,7 @@ export function AuthForm({
       <section className="auth-panel-wrap">
         <div className="auth-panel">
           <Link href="/login" className="brand brand-dark">
-            <span className="brand-mark">
-              <WalletCards size={19} />
-            </span>
-            Finear
+            <Image className="brand-image" src="/logo.svg" alt="Finear" width={162} height={39} priority />
           </Link>
           <div className="auth-heading">
             <p className="overline">{content.eyebrow}</p>
@@ -236,16 +228,6 @@ export function AuthForm({
                 <span>Welcome to your dashboard</span>
                 <Link href="/forgot-password">Forgot password?</Link>
               </div>
-            )}
-            {message && (
-              <p
-                className={
-                  resetSuccess ? "notice notice-info" : "notice notice-error"
-                }
-                role="alert"
-              >
-                {message}
-              </p>
             )}
             <button
               className="button button-primary button-wide"

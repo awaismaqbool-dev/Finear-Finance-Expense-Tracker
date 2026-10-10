@@ -8,6 +8,7 @@ import type { MoneySource, TransactionRecord, TransactionType } from "@/lib/type
 import { Button } from "@/components/ui/button";
 import { SegmentControl } from "@/components/ui/segment-control";
 import { Select } from "@/components/ui/select";
+import { useToast } from "@/components/ui/toast-provider";
 
 const copy: Record<"income" | "expense", { title: string; heading: string; description: string; add: string; accent: string }> = {
   income: { title: "Income", heading: "Give every earning a place.", description: "Keep a clear record of money coming in and see how it builds over time.", add: "Add income", accent: "#218a62" },
@@ -19,6 +20,7 @@ const blankDraft: Draft = { title: "", amount: "", category: "General", source: 
 
 export function TransactionManager({ type }: { type: "income" | "expense" }) {
   const content = copy[type];
+  const toast = useToast();
   const [transactions, setTransactions] = useState<TransactionRecord[]>([]);
   const [nowMs, setNowMs] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -68,10 +70,12 @@ export function TransactionManager({ type }: { type: "income" | "expense" }) {
       const body = { title: draft.title, amount: Number(draft.amount), type: type as TransactionType, source: draft.source, category: draft.category || "General" };
       if (editing) await api.patch("/transactions", { ...body, transactionId: editing.id });
       else await api.post("/transactions", body);
+      const recordName = type === "income" ? "Income" : "Expense";
+      toast.success(editing ? `${recordName} updated.` : `${recordName} added.`);
       setModalOpen(false);
       await load();
     } catch (issue) {
-      setError(getErrorMessage(issue, "Transaction could not be saved."));
+      toast.error(getErrorMessage(issue, "Transaction could not be saved."));
     } finally {
       setBusy(false);
     }
@@ -81,9 +85,10 @@ export function TransactionManager({ type }: { type: "income" | "expense" }) {
     if (!window.confirm(`Delete “${item.title}” and adjust your balances?`)) return;
     try {
       await api.delete("/transactions", { data: { transactionId: item.id } });
+      toast.success("Transaction deleted.");
       await load();
     } catch (issue) {
-      setError(getErrorMessage(issue, "Transaction could not be deleted."));
+      toast.error(getErrorMessage(issue, "Transaction could not be deleted."));
     }
   }
 
@@ -96,8 +101,9 @@ export function TransactionManager({ type }: { type: "income" | "expense" }) {
       anchor.download = `finear-${type}-${new Date().toISOString().slice(0, 10)}.xlsx`;
       anchor.click();
       URL.revokeObjectURL(url);
+      toast.success(`${content.title} spreadsheet downloaded.`);
     } catch (issue) {
-      setError(getErrorMessage(issue, "The spreadsheet could not be downloaded."));
+      toast.error(getErrorMessage(issue, "The spreadsheet could not be downloaded."));
     }
   }
 
